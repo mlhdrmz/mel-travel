@@ -37,7 +37,6 @@
   </script>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
-
   <!-- ÜST NAVİGASYON BAR -->
   <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
@@ -61,7 +60,6 @@
           </p>
         </div>
       </div>
-
       <!-- Orta: Ana Sekmeler -->
       <nav class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800" id="mainNavTabs">
         <button data-tab="map" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-sky-500 text-white shadow">
@@ -82,7 +80,6 @@
           <span>Melih Profili</span>
         </button>
       </nav>
-
       <!-- Sağ: Hızlı Ekleme, PWA Kurulum ve Pasaport Paylaşım Butonu -->
       <div class="flex items-center gap-2">
         <button id="btnInstallPwa" onclick="window.App.triggerPwaInstall()" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-sky-300 border border-sky-500/30 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition" title="Telefon veya Bilgisayara Uygulama Olarak Kur">
@@ -100,10 +97,8 @@
       </div>
     </div>
   </header>
-
   <!-- ANA İÇERİK KONTEYNERİ -->
   <main class="max-w-[1440px] mx-auto px-4 sm:px-6 py-5 space-y-6">
-
     <!-- ÜST KPI İSTATİSTİK ŞERİDİ -->
     <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5" id="kpiStrip">
       <!-- KPI 1: Gezilen İller -->
@@ -120,7 +115,6 @@
           📍
         </div>
       </div>
-
       <!-- KPI 2: Uçuşlar & Rotalar -->
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between cursor-pointer" onclick="window.App.switchTab('trips')">
         <div>
@@ -135,7 +129,6 @@
           🎫
         </div>
       </div>
-
       <!-- KPI 3: Bindiğim Uçaklar -->
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between cursor-pointer" onclick="window.App.switchTab('aircraft')">
         <div>
@@ -150,7 +143,6 @@
           ✈️
         </div>
       </div>
-
       <!-- KPI 4: Uçuş Mesafesi & Koltuk -->
       <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
         <div>
@@ -166,16 +158,13 @@
         </div>
       </div>
     </section>
-
     <!-- ==================================================================== -->
     <!-- SEKME 1: ANA SAYFA TÜRKİYE HARİTASI & FLIGHTRADAR EKRANI             -->
     <!-- ==================================================================== -->
     <section id="tabContent-map" class="space-y-5">
       <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
-
         <!-- SOL / ORTA SÜTUN (81 İL HARİTASI & FLIGHTRADAR): 8 Kolon -->
         <div class="xl:col-span-8 space-y-4">
-
           <!-- Harita Kontrol Çubuğu -->
           <div class="glass-panel rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
             <!-- Harita Görünüm Modları -->
@@ -193,7 +182,6 @@
                 <span>Coğrafi Harita (Leaflet)</span>
               </button>
             </div>
-
             <!-- Sağ: Rota Seçici ve İl Arama -->
             <div class="flex flex-wrap items-center gap-2">
               <select id="routeFilterSelect" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-sky-500">
@@ -202,7 +190,6 @@
                 <option value="FL-VF3181-20261108">🔵 Dönüş: VF3181 (ASR → SAW • Airbus A321neo)</option>
                 <option value="none">🚫 Rotaları Gizle (Sadece Şehirler)</option>
               </select>
-
               <div class="relative">
                 <input id="provinceSearchInput" type="text" placeholder="İl veya plaka ara (örn: 38, Kayseri)..."
                   class="bg-slate-900 border border-slate-700 text-xs text-white rounded-xl pl-8 pr-3 py-1.5 w-48 sm:w-56 focus:outline-none focus:border-sky-500" />
@@ -210,12 +197,10 @@
               </div>
             </div>
           </div>
-
           <!-- ANA HARİTA VİEWPORT -->
           <div class="map-viewport rounded-3xl relative" id="mapViewportContainer">
             <!-- Radar Grid Overlay -->
             <div class="radar-grid-overlay absolute inset-0"></div>
-
             <!-- Üst Bilgi Barı (Harita İçi) -->
             <div class="relative z-10 px-5 pt-4 pb-1 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
               <div>
@@ -234,7 +219,6 @@
                 <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span>Hedefim</span>
               </div>
             </div>
-
             <!-- SVG TÜRKİYE HARİTASI KONTEYNERİ -->
             <div id="svgMapWrapper" class="relative w-full px-2 py-1 select-none">
               <svg id="turkeySvgMap" viewBox="0 0 1200 560" class="w-full h-auto max-h-[540px] drop-shadow-2xl">
@@ -249,36 +233,28 @@
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
                 </defs>
-
                 <!-- Deniz İsimleri -->
                 <text x="580" y="32" class="fill-sky-900/60 font-mono text-[11px] font-bold tracking-[0.35em]">KARADENİZ (BLACK SEA)</text>
                 <text x="360" y="538" class="fill-sky-900/60 font-mono text-[11px] font-bold tracking-[0.35em]">AKDENİZ (MEDITERRANEAN SEA)</text>
                 <text x="65" y="330" class="fill-sky-900/60 font-mono text-[10px] font-bold tracking-[0.25em]" transform="rotate(-90 65 330)">EGE DENİZİ</text>
                 <text x="205" y="138" class="fill-sky-800/70 font-mono text-[8px] font-bold tracking-[0.15em]">MARMARA</text>
-
                 <!-- 81 İl Poligon Katmanı -->
                 <g id="svgProvincesLayer"></g>
-
                 <!-- Göller Katmanı (Van Gölü & Tuz Gölü) -->
                 <g id="svgLakesLayer"></g>
-
                 <!-- İl Plaka / İsim Etiketleri Katmanı -->
                 <g id="svgLabelsLayer"></g>
-
                 <!-- FlightRadar Rota & Havalimanı Katmanı -->
                 <g id="svgRoutesLayer"></g>
                 <g id="svgAirportsLayer"></g>
               </svg>
-
               <!-- Harita Hover Tooltip -->
               <div id="mapTooltip" class="hidden fixed z-50 pointer-events-none bg-slate-950/95 border border-sky-500/40 rounded-xl px-3.5 py-2.5 shadow-2xl text-xs max-w-xs"></div>
             </div>
-
             <!-- LEAFLET COĞRAFİ HARİTA KONTEYNERİ (Varsayılan Gizli) -->
             <div id="leafletMapWrapper" class="hidden w-full h-[500px] rounded-b-3xl overflow-hidden">
               <div id="leafletMapContainer" class="w-full h-full"></div>
             </div>
-
             <!-- ALT FLIGHTRADAR CANLI TELEMETRİ ÇUBUĞU (HUD) -->
             <div class="relative z-10 bg-slate-950/90 border-t border-slate-800/90 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -298,7 +274,6 @@
                   </button>
                 </div>
               </div>
-
               <!-- Telemetri Değerleri -->
               <div class="flex flex-wrap items-center gap-4 text-xs font-mono" id="hudTelemetryMetrics">
                 <div><span class="text-slate-500">UÇAK:</span> <span class="text-white font-bold" id="hudAircraft">A321 & A321neo</span></div>
@@ -311,7 +286,6 @@
               </div>
             </div>
           </div>
-
           <!-- Bölge Filtre Butonları -->
           <div class="flex flex-wrap items-center gap-2" id="regionFilterBar">
             <button data-region="all" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40">Tüm Bölgeler (81)</button>
@@ -324,7 +298,6 @@
             <button data-region="Güneydoğu Anadolu" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Güneydoğu Anadolu (9)</button>
           </div>
         </div>
-
         <!-- SAĞ SÜTUN: SEÇİLİ ŞEHİR DETAY PANELİ & SON UÇUŞLAR (4 Kolon) -->
         <div class="xl:col-span-4 space-y-4">
           <!-- Seçili İl Detay Kartı -->
@@ -332,10 +305,8 @@
             <!-- JS ile dinamik doldurulur (Varsayılan: 38 Kayseri veya 34 İstanbul) -->
           </div>
         </div>
-
       </div>
     </section>
-
     <!-- ==================================================================== -->
     <!-- SEKME 2: SEYAHATLERİM, FLIGHTRADAR ROTALARI & BİNİŞ KARTLARI          -->
     <!-- ==================================================================== -->
@@ -351,12 +322,10 @@
           </button>
         </div>
       </div>
-
       <!-- DİJİTAL BİNİŞ KARTLARI (PEGASUS PC2730 & AJET VF3181) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="boardingPassesGrid">
         <!-- JS ile Pegasus ve AJet biniş kartları buraya çizilir -->
       </div>
-
       <!-- SEYAHAT GEÇMİŞİ LİSTESİ -->
       <div class="glass-panel rounded-3xl p-6 space-y-4">
         <div class="flex items-center justify-between">
@@ -366,7 +335,6 @@
         <div id="tripsListContainer" class="space-y-4"></div>
       </div>
     </section>
-
     <!-- ==================================================================== -->
     <!-- SEKME 3: UÇAK HANGARIM (BİNDİĞİM UÇAKLAR & HAVACILIK ANSİKLOPEDİSİ)  -->
     <!-- ==================================================================== -->
@@ -384,7 +352,6 @@
             Bindiğin uçakların fotoğraflı bilgi kartları, motor/menzil/hız verileri ve <strong>20A</strong> koltuğunun kabin içi yerleşim şeması.
           </p>
         </div>
-
         <!-- Canlı Kuyruk Tescili (Tail Number) Sorgulama Kutusu -->
         <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 min-w-[300px] sm:min-w-[360px]">
           <label class="block text-[11px] font-mono uppercase tracking-wider text-sky-400 mb-1.5">
@@ -407,10 +374,8 @@
           </div>
         </div>
       </div>
-
       <!-- Kuyruk Tescili Sonuç Kutusu (Varsayılan Gizli) -->
       <div id="tailLookupResultBox" class="hidden glass-panel rounded-3xl p-5 border border-sky-500/40"></div>
-
       <!-- Filtre Butonları -->
       <div class="flex flex-wrap items-center gap-2">
         <button data-acfilter="all" class="ac-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white">
@@ -426,20 +391,16 @@
           Boeing Ailesi
         </button>
       </div>
-
       <!-- UÇAK KARTLARI GRİDİ -->
       <div id="aircraftCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
     </section>
-
     <!-- ==================================================================== -->
     <!-- SEKME 4: MELİH'İN PROFİLİ, BÖLGESEL İSTATİSTİKLER & YEDEKLEME        -->
     <!-- ==================================================================== -->
     <section id="tabContent-profile" class="hidden space-y-6">
       <div id="profileDashboardContainer"></div>
     </section>
-
   </main>
-
   <!-- ====================================================================== -->
   <!-- MODAL 1: DİJİTAL BİNİŞ KARTI & ORİJİNAL BİLET FOTOĞRAFI MODALI         -->
   <!-- ====================================================================== -->
@@ -447,7 +408,6 @@
     <div class="glass-panel rounded-3xl max-w-4xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8" id="ticketModalContent">
     </div>
   </div>
-
   <!-- ====================================================================== -->
   <!-- MODAL 2: UÇAK KABİN & 20A KOLTUK ŞEMASI MODALI                         -->
   <!-- ====================================================================== -->
@@ -455,7 +415,6 @@
     <div class="glass-panel rounded-3xl max-w-3xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8" id="seatMapModalContent">
     </div>
   </div>
-
   <!-- ====================================================================== -->
   <!-- MODAL 3: YENİ SEYAHAT / UÇUŞ EKLEME (OCR + KARAYOLU GÜZERGÂH DESTEKLİ) -->
   <!-- ====================================================================== -->
@@ -468,7 +427,6 @@
         </div>
         <button onclick="window.App.closeModal('addTripModal')" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white">✕</button>
       </div>
-
       <!-- YENİ ÖZELLİK 1: AKILLI BİLET FOTOĞRAFI / OCR OKUYUCU KUTUSU -->
       <div id="smartTicketScannerBox" class="bg-slate-900/95 border border-sky-500/35 rounded-2xl p-4 space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
@@ -498,7 +456,6 @@
         </div>
         <div id="ocrScanStatus" class="hidden text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-3 py-1.5"></div>
       </div>
-
       <form id="addFlightForm" class="space-y-4" onsubmit="window.App.handleAddFlightSubmit(event)">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
@@ -523,7 +480,6 @@
             <select id="formToPlate" onchange="window.App.updateHighwayCorridorPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></select>
           </div>
         </div>
-
         <!-- YENİ ÖZELLİK 2: AKILLI KARAYOLU GÜZERGÂH & GEÇİŞ İLLERİ HESAPLAYICI -->
         <div id="highwayCorridorBox" class="hidden bg-amber-500/10 border border-amber-500/35 rounded-2xl p-3.5 space-y-2">
           <div class="flex items-center justify-between">
@@ -535,7 +491,6 @@
           </div>
           <div id="highwayCorridorChips" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
         </div>
-
         <!-- Uçak Özel Alanları -->
         <div id="flightSpecificFields" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 border-t border-slate-800">
           <div>
@@ -571,12 +526,10 @@
             </div>
           </div>
         </div>
-
         <div>
           <label class="block text-xs text-slate-400 mb-1">Seyahat Notu / Anılar</label>
           <textarea id="formNotes" rows="2" placeholder="Bu seyahatle ilgili notların..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
         </div>
-
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="window.App.closeModal('addTripModal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">İptal</button>
           <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-white shadow-lg shadow-emerald-500/25">
@@ -586,7 +539,6 @@
       </form>
     </div>
   </div>
-
   <!-- ====================================================================== -->
   <!-- MODAL 4: PAYLAŞILABİLİR UÇUŞ & SEYAHAT PASAPORTU KARTI (PNG ÜRETİCİ)    -->
   <!-- ====================================================================== -->
@@ -599,7 +551,6 @@
         </div>
         <button onclick="window.App.closeModal('passportModal')" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white">✕</button>
       </div>
-
       <div class="flex flex-col md:flex-row items-center gap-6">
         <div class="flex-1 flex justify-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
           <canvas id="passportCanvas" width="1080" height="1350" class="w-full max-w-[320px] h-auto rounded-xl shadow-2xl border border-slate-700"></canvas>
@@ -616,7 +567,6 @@
       </div>
     </div>
   </div>
-
   <!-- VERİ VE UYGULAMA SCRİPTLERİ -->
   <script src="js/turkey-provinces.js"></script>
   <script src="js/aviation-data.js"></script>

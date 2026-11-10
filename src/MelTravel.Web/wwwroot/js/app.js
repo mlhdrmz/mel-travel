@@ -1,10 +1,8 @@
 // ============================================================================
 // MelTravel - Ana Uygulama Motoru (Harita, FlightRadar, Hangar & Profil)
 // ============================================================================
-
 window.App = (function () {
   const STORAGE_KEY = "mel_travel_state_v2";
-
   let state = loadState();
   let activeTab = "map";
   let mapMode = "hybrid"; // "hybrid" | "radar" | "leaflet"
@@ -15,7 +13,6 @@ window.App = (function () {
   let aircraftFilter = "all";
   let leafletMap = null;
   let leafletLayerGroup = null;
-
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -30,7 +27,6 @@ window.App = (function () {
     }
     return JSON.parse(JSON.stringify(window.DEFAULT_MELIH_STATE));
   }
-
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -54,24 +50,20 @@ window.App = (function () {
       }).catch(() => {});
     }
   }
-
   function init() {
     bindEvents();
     populateFormSelects();
     renderAll();
   }
-
   function bindEvents() {
     // Ana Sekmeler
     document.querySelectorAll(".nav-tab-btn").forEach(btn => {
       btn.addEventListener("click", () => switchTab(btn.dataset.tab));
     });
-
     // Harita Mod Butonları
     document.querySelectorAll(".map-mode-btn").forEach(btn => {
       btn.addEventListener("click", () => setMapMode(btn.dataset.mapmode));
     });
-
     // Rota Filtresi
     const routeSelect = document.getElementById("routeFilterSelect");
     if (routeSelect) {
@@ -81,7 +73,6 @@ window.App = (function () {
         updateHudMetrics(selectedRouteFilter);
       });
     }
-
     // İl Arama
     const searchInput = document.getElementById("provinceSearchInput");
     if (searchInput) {
@@ -90,7 +81,6 @@ window.App = (function () {
         renderSvgProvinces();
       });
     }
-
     // Bölge Filtreleri
     document.querySelectorAll(".region-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -104,7 +94,6 @@ window.App = (function () {
         renderSvgProvinces();
       });
     });
-
     // Uçak Filtreleri
     document.querySelectorAll(".ac-filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -118,7 +107,6 @@ window.App = (function () {
         renderAircraftCatalog();
       });
     });
-
     // Yeni Seyahat Modalı Açma
     const btnAdd = document.getElementById("btnOpenAddModal");
     if (btnAdd) {
@@ -127,26 +115,22 @@ window.App = (function () {
       });
     }
   }
-
   function switchTab(tabId) {
     activeTab = tabId;
     ["map", "trips", "aircraft", "profile"].forEach(t => {
       const el = document.getElementById(`tabContent-${t}`);
       if (el) el.classList.toggle("hidden", t !== tabId);
     });
-
     document.querySelectorAll(".nav-tab-btn").forEach(btn => {
       const isCurrent = btn.dataset.tab === tabId;
       btn.className = isCurrent
         ? "nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-sky-500 text-white shadow"
         : "nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800/70";
     });
-
     if (tabId === "map" && mapMode === "leaflet" && leafletMap) {
       setTimeout(() => leafletMap.invalidateSize(), 120);
     }
   }
-
   function setMapMode(mode) {
     mapMode = mode;
     document.querySelectorAll(".map-mode-btn").forEach(btn => {
@@ -155,12 +139,10 @@ window.App = (function () {
         ? "map-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500 text-white shadow flex items-center gap-1.5 transition"
         : "map-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800/90 text-slate-300 hover:text-white flex items-center gap-1.5 transition";
     });
-
     const viewport = document.getElementById("mapViewportContainer");
     const svgWrapper = document.getElementById("svgMapWrapper");
     const leafletWrapper = document.getElementById("leafletMapWrapper");
     const subtitle = document.getElementById("mapModeSubtitle");
-
     if (mode === "leaflet") {
       svgWrapper.classList.add("hidden");
       leafletWrapper.classList.remove("hidden");
@@ -178,7 +160,6 @@ window.App = (function () {
       renderMapRoutesAndAirports();
     }
   }
-
   function renderAll() {
     renderKpiStrip();
     renderSvgProvinces();
@@ -188,7 +169,6 @@ window.App = (function () {
     renderAircraftCatalog();
     renderProfileDashboard();
   }
-
   // ==========================================================================
   // 1. ÜST KPI ŞERİDİ
   // ==========================================================================
@@ -200,10 +180,8 @@ window.App = (function () {
     const passedPlates = Object.keys(statuses).filter(k => statuses[k] === "passed");
     const count = visitedPlates.length;
     const pct = ((count / 81) * 100).toFixed(1);
-
     document.getElementById("kpiVisitedCount").textContent = count;
     document.getElementById("kpiVisitedPercent").textContent = `%${pct}`;
-
     const visitedNames = visitedPlates
       .map(p => window.TURKEY_PROVINCES.find(x => x.plate === Number(p)))
       .filter(Boolean)
@@ -212,24 +190,20 @@ window.App = (function () {
       .join(" • ");
     document.getElementById("kpiVisitedSub").textContent =
       visitedNames + (passedPlates.length > 0 ? ` (+${passedPlates.length} geçildi)` : "");
-
     const flights = state.flights || [];
     document.getElementById("kpiFlightCount").textContent = flights.length;
     document.getElementById("navFlightBadge").textContent = flights.length;
-
     const uniqueAircraftIds = [...new Set(flights.map(f => f.aircraftId))];
     document.getElementById("kpiAircraftCount").textContent = uniqueAircraftIds.length;
     const aircraftNames = uniqueAircraftIds
       .map(id => window.AviationUtils.getAircraft(id)?.model || id)
       .join(" & ");
     document.getElementById("kpiAircraftSub").textContent = aircraftNames || "Henüz uçuş yok";
-
     const totalKm = flights.reduce((acc, f) => acc + (Number(f.distanceKm) || 0), 0);
     const totalMin = flights.reduce((acc, f) => acc + (Number(f.durationMinutes) || 0), 0);
     document.getElementById("kpiTotalKm").textContent = totalKm.toLocaleString("tr-TR");
     document.getElementById("kpiTotalHours").textContent = window.AviationUtils.formatDuration(totalMin);
   }
-
   // ==========================================================================
   // 2. TÜRKİYE 81 İL SVG HARİTASI ÇİZİMİ
   // ==========================================================================
@@ -239,13 +213,10 @@ window.App = (function () {
     const lakesLayer = document.getElementById("svgLakesLayer");
     const labelsLayer = document.getElementById("svgLabelsLayer");
     const tooltip = document.getElementById("mapTooltip");
-
     if (!provincesLayer) return;
-
     provincesLayer.innerHTML = "";
     lakesLayer.innerHTML = "";
     labelsLayer.innerHTML = "";
-
     // Gölleri Çiz (Van Gölü & Tuz Gölü)
     const lakeVanPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     lakeVanPath.setAttribute("d", mapData.lakeVan);
@@ -254,7 +225,6 @@ window.App = (function () {
     lakeVanPath.setAttribute("stroke-width", "0.9");
     lakeVanPath.setAttribute("opacity", "0.9");
     lakesLayer.appendChild(lakeVanPath);
-
     const lakeTuzPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     lakeTuzPath.setAttribute("d", mapData.lakeTuz);
     lakeTuzPath.setAttribute("fill", "#081a33");
@@ -262,37 +232,29 @@ window.App = (function () {
     lakeTuzPath.setAttribute("stroke-width", "0.7");
     lakeTuzPath.setAttribute("opacity", "0.75");
     lakesLayer.appendChild(lakeTuzPath);
-
     // 81 İli Çiz
     window.TURKEY_PROVINCES.forEach(prov => {
       const pathStr = mapData.provinces[prov.plate];
       if (!pathStr) return;
-
       const status = state.provinceStatuses[prov.plate] || "none";
       const isSelected = prov.plate === selectedProvincePlate;
-
       const matchesRegion = selectedRegionFilter === "all" || prov.region === selectedRegionFilter;
       const matchesSearch =
         !searchQuery ||
         prov.name.toLowerCase().includes(searchQuery) ||
         prov.code.includes(searchQuery);
-
       const isDimmed = !(matchesRegion && matchesSearch);
-
       const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
       pathEl.setAttribute("d", pathStr);
       pathEl.setAttribute("data-plate", prov.plate);
-
       let cls = `province-path status-${mapMode === "radar" && status === "none" ? "none" : status}`;
       if (isSelected) cls += " selected-province";
       if (isDimmed) cls += " dimmed";
       pathEl.setAttribute("class", cls);
-
       if (mapMode === "radar" && status === "none") {
         pathEl.style.fill = "#071821";
         pathEl.style.stroke = "rgba(16, 185, 129, 0.22)";
       }
-
       // Etkileşimler
       pathEl.addEventListener("mouseenter", e => {
         showProvinceTooltip(e, prov, status);
@@ -306,22 +268,18 @@ window.App = (function () {
       pathEl.addEventListener("click", () => {
         selectProvince(prov.plate);
       });
-
       provincesLayer.appendChild(pathEl);
-
       // İl Etiketi (Plaka + İsim)
       const [cx, cy] = window.TurkeyMapEngine.project(prov.lat, prov.lon);
       const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
       textEl.setAttribute("x", cx);
       textEl.setAttribute("y", cy);
-
       const isHighlighted = status !== "none" || isSelected;
       textEl.setAttribute("class", `province-label ${isHighlighted ? "highlight-label" : ""} ${isDimmed ? "opacity-25" : ""}`);
       textEl.textContent = isHighlighted ? `${prov.code} ${prov.name}` : prov.code;
       labelsLayer.appendChild(textEl);
     });
   }
-
   function showProvinceTooltip(e, prov, status) {
     const tooltip = document.getElementById("mapTooltip");
     const statusLabels = {
@@ -331,11 +289,9 @@ window.App = (function () {
       wishlist: `<span class="text-purple-400 font-bold">💜 Gitmek İstiyorum</span>`,
       none: `<span class="text-slate-400">⚪ Henüz Gidilmedi</span>`
     };
-
     const cityFlights = (state.flights || []).filter(
       f => f.fromPlate === prov.plate || f.toPlate === prov.plate
     );
-
     tooltip.innerHTML = `
       <div class="flex items-center justify-between gap-3 border-b border-slate-800 pb-1.5 mb-1.5">
         <div class="flex items-center gap-1.5">
@@ -354,7 +310,6 @@ window.App = (function () {
     tooltip.classList.remove("hidden");
     moveProvinceTooltip(e);
   }
-
   function moveProvinceTooltip(e) {
     const tooltip = document.getElementById("mapTooltip");
     const x = Math.min(window.innerWidth - 280, e.clientX + 16);
@@ -362,13 +317,11 @@ window.App = (function () {
     tooltip.style.left = `${x}px`;
     tooltip.style.top = `${y}px`;
   }
-
   function selectProvince(plate) {
     selectedProvincePlate = Number(plate);
     renderSvgProvinces();
     renderSelectedCityPanel(selectedProvincePlate);
   }
-
   // ==========================================================================
   // 3. FLIGHTRADAR ROTALARI & ANİMASYONLU UÇAKLAR (SVG KATMANI)
   // ==========================================================================
@@ -376,34 +329,25 @@ window.App = (function () {
     const routesLayer = document.getElementById("svgRoutesLayer");
     const airportsLayer = document.getElementById("svgAirportsLayer");
     if (!routesLayer || !airportsLayer) return;
-
     routesLayer.innerHTML = "";
     airportsLayer.innerHTML = "";
-
     if (selectedRouteFilter === "none") return;
-
     const flightsToShow = (state.flights || []).filter(
       f => selectedRouteFilter === "all" || f.id === selectedRouteFilter
     );
-
     const activeAirportCodes = new Set();
-
     // Eğer FlightRadar modundaysak tüm ana havalimanlarını radar noktası olarak göster
     if (mapMode === "radar") {
       window.TURKEY_AIRPORTS.forEach(ap => activeAirportCodes.add(ap.iata));
     }
-
     flightsToShow.forEach((flight, idx) => {
       const fromAp = window.AviationUtils.getAirport(flight.fromIata);
       const toAp = window.AviationUtils.getAirport(flight.toIata);
       if (!fromAp || !toAp) return;
-
       activeAirportCodes.add(fromAp.iata);
       activeAirportCodes.add(toAp.iata);
-
       const [x1, y1] = window.TurkeyMapEngine.project(fromAp.lat, fromAp.lon);
       const [x2, y2] = window.TurkeyMapEngine.project(toAp.lat, toAp.lon);
-
       // Gidiş ve Dönüş yaylarının üst üste binmemesi için zıt kavis kontrol noktası
       const midX = (x1 + x2) / 2;
       const midY = (y1 + y2) / 2;
@@ -412,16 +356,13 @@ window.App = (function () {
       const len = Math.hypot(dx, dy) || 1;
       const nx = -dy / len;
       const ny = dx / len;
-
       // Gidiş (SAW->ASR) kuzeyden yay çizer, Dönüş (ASR->SAW) güneyden yay çizer
       const curveOffset = flight.direction === "inbound" ? 46 : -48;
       const cx = midX + nx * curveOffset;
       const cy = midY + ny * curveOffset;
-
       const pathD = `M ${x1},${y1} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${x2},${y2}`;
       const routeId = `flightArc_${flight.id}`;
       const color = flight.routeColor || (flight.direction === "inbound" ? "#38bdf8" : "#f59e0b");
-
       // 1. Arka Plan Parlama Yayı
       const glowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
       glowPath.setAttribute("d", pathD);
@@ -430,7 +371,6 @@ window.App = (function () {
       glowPath.setAttribute("stroke-width", "5");
       glowPath.setAttribute("opacity", "0.22");
       routesLayer.appendChild(glowPath);
-
       // 2. Kesikli Animasyonlu FlightRadar Yayı
       const arcPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
       arcPath.setAttribute("id", routeId);
@@ -441,15 +381,12 @@ window.App = (function () {
       arcPath.setAttribute("class", "flight-arc-Animated cursor-pointer");
       arcPath.addEventListener("click", () => openBoardingPassModal(flight.id));
       routesLayer.appendChild(arcPath);
-
       // 3. Yay Ortası Uçuş Bilgi Etiketi (PC2730 / VF3181)
       const labelX = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
       const labelY = 0.25 * y1 + 0.5 * cy + 0.25 * y2 + (flight.direction === "inbound" ? 16 : -14);
-
       const badgeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       badgeGroup.setAttribute("class", "cursor-pointer");
       badgeGroup.addEventListener("click", () => openBoardingPassModal(flight.id));
-
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", labelX - 66);
       rect.setAttribute("y", labelY - 10);
@@ -460,7 +397,6 @@ window.App = (function () {
       rect.setAttribute("stroke", color);
       rect.setAttribute("stroke-width", "1.2");
       badgeGroup.appendChild(rect);
-
       const badgeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
       badgeText.setAttribute("x", labelX);
       badgeText.setAttribute("y", labelY + 3.5);
@@ -472,7 +408,6 @@ window.App = (function () {
       badgeText.textContent = `${flight.flightNumber} • ${flight.aircraftName.replace("Airbus ", "")}`;
       badgeGroup.appendChild(badgeText);
       routesLayer.appendChild(badgeGroup);
-
       // 4. Rota Üzerinde Canlı Hareket Eden Uçak İkonu (<animateMotion>)
       const planeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       const planeIcon = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -481,22 +416,18 @@ window.App = (function () {
       planeIcon.setAttribute("fill", "#ffffff");
       planeIcon.setAttribute("stroke", color);
       planeIcon.setAttribute("stroke-width", "1.5");
-
       const animMotion = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
       animMotion.setAttribute("dur", flight.direction === "inbound" ? "7.5s" : "6.5s");
       animMotion.setAttribute("repeatCount", "indefinite");
       animMotion.setAttribute("rotate", "auto");
-
       const mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
       mpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${routeId}`);
       mpath.setAttribute("href", `#${routeId}`);
       animMotion.appendChild(mpath);
-
       planeGroup.appendChild(planeIcon);
       planeGroup.appendChild(animMotion);
       routesLayer.appendChild(planeGroup);
     });
-
     // Karayolu / Tren Seyahatlerinin Güzergâh Çizgileri
     (state.trips || [])
       .filter(t => t.transportType !== "plane" && Array.isArray(t.transitPlates) && t.transitPlates.length > 0)
@@ -517,18 +448,15 @@ window.App = (function () {
         roadPath.setAttribute("opacity", "0.85");
         routesLayer.appendChild(roadPath);
       });
-
     // Aktif Havalimanı Radar İşaretçilerini Çiz
     activeAirportCodes.forEach(iata => {
       const ap = window.AviationUtils.getAirport(iata);
       if (!ap) return;
       const [ax, ay] = window.TurkeyMapEngine.project(ap.lat, ap.lon);
       const isPrimary = iata === "SAW" || iata === "ASR";
-
       const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       g.setAttribute("class", "cursor-pointer");
       g.addEventListener("click", () => selectProvince(ap.plate));
-
       if (isPrimary) {
         const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pulse.setAttribute("cx", ax);
@@ -540,7 +468,6 @@ window.App = (function () {
         pulse.setAttribute("class", "airport-pulse-ring");
         g.appendChild(pulse);
       }
-
       const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       dot.setAttribute("cx", ax);
       dot.setAttribute("cy", ay);
@@ -549,7 +476,6 @@ window.App = (function () {
       dot.setAttribute("stroke", isPrimary ? "#0ea5e9" : "#052e16");
       dot.setAttribute("stroke-width", "2");
       g.appendChild(dot);
-
       if (isPrimary || mapMode === "radar") {
         const tag = document.createElementNS("http://www.w3.org/2000/svg", "text");
         tag.setAttribute("x", ax);
@@ -565,11 +491,9 @@ window.App = (function () {
         tag.textContent = isPrimary ? `🛫 ${ap.iata} (${ap.city})` : ap.iata;
         g.appendChild(tag);
       }
-
       airportsLayer.appendChild(g);
     });
   }
-
   function focusFlightOnMap(flightIdOrAll) {
     selectedRouteFilter = flightIdOrAll;
     const sel = document.getElementById("routeFilterSelect");
@@ -578,7 +502,6 @@ window.App = (function () {
     updateHudMetrics(flightIdOrAll);
     if (mapMode === "leaflet") initOrUpdateLeafletMap();
   }
-
   function updateHudMetrics(flightIdOrAll) {
     if (flightIdOrAll === "all" || flightIdOrAll === "none") {
       document.getElementById("hudAircraft").textContent = "A321 & A321neo";
@@ -594,7 +517,6 @@ window.App = (function () {
     document.getElementById("hudDistance").textContent = `${f.distanceKm} km (${f.departureTime}→${f.arrivalTime})`;
     document.getElementById("hudAltitude").textContent = `${(f.cruiseAltitudeFt || 35000).toLocaleString()} ft @ ${f.cruiseSpeedKmh || 840} km/s`;
   }
-
   // ==========================================================================
   // 4. LEAFLET GERÇEK COĞRAFİ HARİTA DESTEĞİ
   // ==========================================================================
@@ -608,9 +530,7 @@ window.App = (function () {
       }).addTo(leafletMap);
       leafletLayerGroup = L.layerGroup().addTo(leafletMap);
     }
-
     leafletLayerGroup.clearLayers();
-
     // Gezilen İlleri Pinle
     window.TURKEY_PROVINCES.forEach(p => {
       const st = state.provinceStatuses[p.plate];
@@ -626,7 +546,6 @@ window.App = (function () {
       marker.on("click", () => selectProvince(p.plate));
       leafletLayerGroup.addLayer(marker);
     });
-
     // Uçuş Rotalarını Çiz
     (state.flights || []).forEach(f => {
       const fromAp = window.AviationUtils.getAirport(f.fromIata);
@@ -645,10 +564,8 @@ window.App = (function () {
       ).bindPopup(`<b>${f.airline} ${f.flightNumber}</b><br/>${f.fromIata} → ${f.toIata} (${f.aircraftName})`);
       leafletLayerGroup.addLayer(poly);
     });
-
     setTimeout(() => leafletMap.invalidateSize(), 100);
   }
-
   // ==========================================================================
   // 5. SEÇİLİ ŞEHİR DETAY PANELİ (SAĞ SÜTUN)
   // ==========================================================================
@@ -656,18 +573,15 @@ window.App = (function () {
     const prov = window.TURKEY_PROVINCES.find(p => p.plate === Number(plate)) || window.TURKEY_PROVINCES[37];
     const container = document.getElementById("selectedCityPanel");
     if (!container || !prov) return;
-
     const status = state.provinceStatuses[prov.plate] || "none";
     const memory = (state.cityMemories && state.cityMemories[prov.plate]) || {
       visitedDate: "",
       notes: "",
       photos: []
     };
-
     const cityFlights = (state.flights || []).filter(
       f => f.fromPlate === prov.plate || f.toPlate === prov.plate
     );
-
     const statusButtons = [
       { key: "visited", label: "✅ Gezdim", activeCls: "bg-emerald-500 text-white border-emerald-400" },
       { key: "passed", label: "🚗 Geçtim", activeCls: "bg-amber-500 text-slate-950 border-amber-300" },
@@ -675,7 +589,6 @@ window.App = (function () {
       { key: "home", label: "🏠 Merkez", activeCls: "bg-sky-500 text-white border-sky-400" },
       { key: "none", label: "⚪ Temizle", activeCls: "bg-slate-700 text-white border-slate-600" }
     ];
-
     container.innerHTML = `
       <!-- Kapak Görseli -->
       <div class="relative h-48 overflow-hidden">
@@ -701,7 +614,6 @@ window.App = (function () {
           </div>
         </div>
       </div>
-
       <!-- İçerik Gövdesi -->
       <div class="p-5 space-y-5">
         <!-- Ziyaret Durumu Değiştirici -->
@@ -726,12 +638,10 @@ window.App = (function () {
               .join("")}
           </div>
         </div>
-
         <!-- Şehir Özeti -->
         <p class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-2xl border border-slate-800/80">
           ${prov.summary}
         </p>
-
         <!-- Gezilecek Yerler & Meşhur Lezzetler -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="bg-slate-900/70 p-3 rounded-2xl border border-slate-800">
@@ -751,7 +661,6 @@ window.App = (function () {
             </div>
           </div>
         </div>
-
         <!-- Bu Şehre Ait Uçuşlarım & FlightRadar Rotalarım -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between">
@@ -800,7 +709,6 @@ window.App = (function () {
                   .join("")
           }
         </div>
-
         <!-- Kişisel Şehir Anılarım & Fotoğraf Ekleme -->
         <div class="space-y-2.5 pt-2 border-t border-slate-800">
           <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">📸 ${prov.name} Anılarım & Fotoğraflarım</h4>
@@ -837,7 +745,6 @@ window.App = (function () {
       </div>
     `;
   }
-
   function setProvinceStatus(plate, statusKey) {
     if (!state.provinceStatuses) state.provinceStatuses = {};
     if (statusKey === "none") {
@@ -848,7 +755,6 @@ window.App = (function () {
     saveState();
     renderAll();
   }
-
   function saveCityNote(plate) {
     const textarea = document.getElementById("cityNoteTextarea");
     if (!textarea) return;
@@ -860,7 +766,6 @@ window.App = (function () {
     saveState();
     renderSelectedCityPanel(plate);
   }
-
   function handleCityPhotoUpload(event, plate) {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -882,7 +787,6 @@ window.App = (function () {
     };
     reader.readAsDataURL(file);
   }
-
   // ==========================================================================
   // 6. SEYAHATLERİM & DİJİTAL BİNİŞ KARTLARI (PEGASUS PC2730 & AJET VF3181)
   // ==========================================================================
@@ -890,9 +794,7 @@ window.App = (function () {
     const grid = document.getElementById("boardingPassesGrid");
     const tripsList = document.getElementById("tripsListContainer");
     if (!grid || !tripsList) return;
-
     grid.innerHTML = (state.flights || []).map(f => buildBoardingPassCardHtml(f)).join("");
-
     tripsList.innerHTML = (state.trips || [])
       .map(
         t => `
@@ -928,11 +830,9 @@ window.App = (function () {
       )
       .join("");
   }
-
   function buildBoardingPassCardHtml(f) {
     const isPegasus = f.airlineTheme === "pegasus" || f.airlineCode === "PC";
     const ac = window.AviationUtils.getAircraft(f.aircraftId);
-
     return `
       <div class="boarding-pass ${isPegasus ? "boarding-pass-pegasus" : "boarding-pass-ajet"} flex flex-col justify-between">
         <!-- Üst Şerit -->
@@ -949,7 +849,6 @@ window.App = (function () {
             <span class="text-xs font-bold">UÇUŞ: ${f.flightNumber}</span>
           </div>
         </div>
-
         <!-- Orta Rota & Saat Bilgisi -->
         <div class="p-5 space-y-4">
           <div class="flex items-center justify-between">
@@ -958,7 +857,6 @@ window.App = (function () {
               <div class="text-xs text-slate-300 font-semibold">${f.fromCity}</div>
               <div class="text-sm font-mono font-bold text-amber-400 mt-0.5">${f.departureTime}</div>
             </div>
-
             <div class="flex-1 px-4 text-center">
               <div class="text-[11px] font-mono text-sky-400 font-bold">${f.aircraftName}</div>
               <div class="relative flex items-center justify-center my-1.5">
@@ -967,14 +865,12 @@ window.App = (function () {
               </div>
               <div class="text-[10px] font-mono text-slate-400">${f.distanceKm} km • ${window.AviationUtils.formatDuration(f.durationMinutes)}</div>
             </div>
-
             <div class="text-right">
               <div class="text-3xl font-black text-white font-mono">${f.toIata}</div>
               <div class="text-xs text-slate-300 font-semibold">${f.toCity}</div>
               <div class="text-sm font-mono font-bold text-emerald-400 mt-0.5">${f.arrivalTime}</div>
             </div>
           </div>
-
           <!-- Biniş Kartı Detay Kutucukları (Koltuk 20A, Kapı 206, Biniş Saati, Bagaj) -->
           <div class="grid grid-cols-4 gap-2 bg-slate-950/65 p-3 rounded-2xl border border-slate-800/90 text-center">
             <div>
@@ -994,15 +890,12 @@ window.App = (function () {
               <div class="text-xs font-bold text-sky-300 font-mono">08.11.2026</div>
             </div>
           </div>
-
           <div class="grid grid-cols-3 gap-2 text-[11px] text-slate-300 font-mono bg-slate-900/50 px-3 py-2 rounded-xl">
             <div><span class="text-slate-500">BAGAJ:</span> ${f.baggage}</div>
             <div><span class="text-slate-500">BÖLGE/SEQ:</span> ${f.boardingZone} / ${f.sequenceNo}</div>
             <div><span class="text-slate-500">PNR:</span> ${f.maskedPnr}</div>
           </div>
-
           <div class="bp-tear-line"></div>
-
           <!-- Alt Aksiyon Butonları -->
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
@@ -1025,14 +918,12 @@ window.App = (function () {
       </div>
     `;
   }
-
   function openBoardingPassModal(flightId) {
     const f = (state.flights || []).find(x => x.id === flightId) || state.flights[0];
     if (!f) return;
     const ac = window.AviationUtils.getAircraft(f.aircraftId);
     const modal = document.getElementById("ticketModal");
     const content = document.getElementById("ticketModalContent");
-
     content.innerHTML = `
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
@@ -1041,7 +932,6 @@ window.App = (function () {
         </div>
         <button onclick="window.App.closeModal('ticketModal')" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-bold">✕</button>
       </div>
-
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <!-- Sol: Orijinal Bilet Görseli -->
         <div class="lg:col-span-6 bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-3">
@@ -1063,7 +953,6 @@ window.App = (function () {
               : `<div class="p-8 text-center text-slate-500 text-xs">Bu uçuş için bilet görseli yüklenmedi.</div>`
           }
         </div>
-
         <!-- Sağ: Uçuş Telemetri ve Uçak Özeti -->
         <div class="lg:col-span-6 space-y-4">
           <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-3">
@@ -1079,7 +968,6 @@ window.App = (function () {
               <div class="p-2.5 rounded-xl bg-slate-950"><span class="text-slate-500 block">Mesafe & Süre</span><b class="text-sky-300 font-mono">${f.distanceKm} km • ${window.AviationUtils.formatDuration(f.durationMinutes)}</b></div>
             </div>
           </div>
-
           <!-- Uçak Teknik Kartı -->
           <div class="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-2.5">
             <div class="flex items-center justify-between">
@@ -1099,28 +987,23 @@ window.App = (function () {
     `;
     modal.classList.remove("hidden");
   }
-
   // ==========================================================================
   // 7. UÇAK HANGARIM & 20A KOLTUK ŞEMASI + KUYRUK TESCİLİ SORGULAMA
   // ==========================================================================
   function renderAircraftCatalog() {
     const grid = document.getElementById("aircraftCatalogGrid");
     if (!grid) return;
-
     const flownAircraftIds = new Set((state.flights || []).map(f => f.aircraftId));
-
     const models = window.AIRCRAFT_CATALOG.filter(ac => {
       if (aircraftFilter === "flown") return flownAircraftIds.has(ac.id);
       if (aircraftFilter === "Airbus") return ac.manufacturer === "Airbus";
       if (aircraftFilter === "Boeing") return ac.manufacturer === "Boeing";
       return true;
     });
-
     grid.innerHTML = models
       .map(ac => {
         const isFlown = flownAircraftIds.has(ac.id);
         const myFlightsWithThis = (state.flights || []).filter(f => f.aircraftId === ac.id);
-
         return `
         <div class="glass-card rounded-3xl overflow-hidden flex flex-col justify-between border ${
           isFlown ? "border-amber-500/50 shadow-lg shadow-amber-500/10" : "border-slate-800"
@@ -1147,11 +1030,9 @@ window.App = (function () {
                 <h3 class="text-xl font-extrabold text-white">${ac.fullName}</h3>
               </div>
             </div>
-
             <!-- Teknik Özellikler -->
             <div class="p-5 space-y-4">
               <p class="text-xs text-slate-300 leading-relaxed">${ac.description}</p>
-
               <div class="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
                 <div><span class="text-slate-500 block text-[10px]">MOTOR</span><span class="text-slate-200">${ac.engines.split("/")[0]}</span></div>
                 <div><span class="text-slate-500 block text-[10px]">SEYİR HIZI</span><span class="text-sky-300">${ac.cruiseSpeedKmh} km/s (${ac.mach})</span></div>
@@ -1160,7 +1041,6 @@ window.App = (function () {
                 <div><span class="text-slate-500 block text-[10px]">KANAT / UZUNLUK</span><span class="text-slate-200">${ac.wingspan.split(" ")[0]}m / ${ac.length}</span></div>
                 <div><span class="text-slate-500 block text-[10px]">İLK UÇUŞ & TAVAN</span><span class="text-slate-200">${ac.firstFlight} • ${ac.ceilingFt}</span></div>
               </div>
-
               ${
                 myFlightsWithThis.length > 0
                   ? `<div class="space-y-1.5 bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl">
@@ -1180,7 +1060,6 @@ window.App = (function () {
               }
             </div>
           </div>
-
           <div class="px-5 pb-5 pt-1 flex items-center justify-between gap-2">
             <button onclick="window.App.openSeatMapModal('${ac.id}', '20A', '${myFlightsWithThis[0]?.flightNumber || ac.model}')"
               class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-sky-500 hover:text-white text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5">
@@ -1193,15 +1072,12 @@ window.App = (function () {
       })
       .join("");
   }
-
   function openSeatMapModal(aircraftId, highlightSeat = "20A", flightLabel = "") {
     const ac = window.AviationUtils.getAircraft(aircraftId);
     const modal = document.getElementById("seatMapModal");
     const content = document.getElementById("seatMapModalContent");
-
     const rowsToRender = [1, 2, 3, 10, 11, 12, 18, 19, 20, 21, 22, 23, 30, 35];
     const seatLetters = ["A", "B", "C", "D", "E", "F"];
-
     content.innerHTML = `
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
@@ -1210,11 +1086,9 @@ window.App = (function () {
         </div>
         <button onclick="window.App.closeModal('seatMapModal')" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 hover:text-white">✕</button>
       </div>
-
       <p class="text-xs text-slate-300">
         <b>${highlightSeat}</b> koltuğu uçağın sol tarafında (iskele), kanat firar kenarının (arka kısmının) hemen arkasında yer alan <b>Cam Kenarı (Window)</b> koltuktur. Hem motor/kanat flap hareketlerini hem de aşağıda uzanan Anadolu coğrafyasını izlemek için en ideal noktalardan biridir.
       </p>
-
       <!-- Gövde Şeması -->
       <div class="bg-slate-950 border border-slate-800 rounded-3xl p-5 flex flex-col items-center space-y-2 overflow-x-auto">
         <div class="text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">▲ KOKPİT & ÖN KAPI (BURUN) ▲</div>
@@ -1255,10 +1129,8 @@ window.App = (function () {
         <div class="text-xs font-mono text-slate-400 uppercase tracking-widest mt-2">▼ KUYRUK & ARKA GALLEY ▼</div>
       </div>
     `;
-
     modal.classList.remove("hidden");
   }
-
   function quickTail(reg) {
     const inp = document.getElementById("tailLookupInput");
     if (inp) {
@@ -1266,20 +1138,15 @@ window.App = (function () {
       lookupTailNumber();
     }
   }
-
   async function lookupTailNumber() {
     const inp = document.getElementById("tailLookupInput");
     const box = document.getElementById("tailLookupResultBox");
     if (!inp || !box) return;
-
     const reg = (inp.value || "").trim().toUpperCase();
     if (!reg) return;
-
     box.classList.remove("hidden");
     const localInfo = window.TURKISH_TAIL_REGISTRY[reg];
-
     box.innerHTML = `<div class="text-xs font-mono text-sky-400">📡 ${reg} kuyruk tescili sorgulanıyor...</div>`;
-
     let apiPhotoUrl = null;
     let apiPhotographer = null;
     try {
@@ -1294,7 +1161,6 @@ window.App = (function () {
     } catch {
       // Çevrimdışı veya CORS durumunda yerleşik veritabanı kullanılır
     }
-
     if (!localInfo && !apiPhotoUrl) {
       box.innerHTML = `
         <div class="flex items-center justify-between">
@@ -1306,9 +1172,7 @@ window.App = (function () {
       `;
       return;
     }
-
     const fallbackAc = localInfo ? window.AviationUtils.getAircraft(localInfo.aircraftId) : window.AIRCRAFT_CATALOG[1];
-
     box.innerHTML = `
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
@@ -1330,14 +1194,12 @@ window.App = (function () {
       </div>
     `;
   }
-
   // ==========================================================================
   // 8. MELİH PROFİL PANELİ & BÖLGESEL İSTATİSTİKLER
   // ==========================================================================
   function renderProfileDashboard() {
     const container = document.getElementById("profileDashboardContainer");
     if (!container) return;
-
     const regions = ["Marmara", "İç Anadolu", "Ege", "Akdeniz", "Karadeniz", "Doğu Anadolu", "Güneydoğu Anadolu"];
     const regionStats = regions.map(reg => {
       const totalInReg = window.TURKEY_PROVINCES.filter(p => p.region === reg);
@@ -1347,7 +1209,6 @@ window.App = (function () {
       const pct = Math.round((visitedInReg.length / totalInReg.length) * 100);
       return { region: reg, total: totalInReg.length, visited: visitedInReg.length, pct };
     });
-
     container.innerHTML = `
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Sol: Melih Kimlik Kartı -->
@@ -1364,16 +1225,13 @@ window.App = (function () {
               </span>
             </div>
           </div>
-
           <p class="text-xs text-slate-300 leading-relaxed">${state.profile.bio}</p>
-
           <div class="space-y-2 bg-slate-900/80 p-4 rounded-2xl border border-slate-800 text-xs">
             <div class="flex justify-between"><span class="text-slate-400">Favori Koltuk:</span><b class="text-amber-400 font-mono">${state.profile.favoriteSeat}</b></div>
             <div class="flex justify-between"><span class="text-slate-400">Favori Uçak Ailesi:</span><b class="text-sky-400">${state.profile.favoriteAircraft}</b></div>
             <div class="flex justify-between"><span class="text-slate-400">Uçulan Havayolları:</span><b class="text-white">Pegasus (PC), AJet (VF)</b></div>
             <div class="flex justify-between"><span class="text-slate-400">Uçulan Havalimanları:</span><b class="text-emerald-400 font-mono">SAW, ASR</b></div>
           </div>
-
           <div class="flex flex-wrap gap-2 pt-2">
             <button onclick="window.App.exportJsonData()" class="flex-1 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 text-xs font-bold transition">
               💾 JSON Yedek İndir
@@ -1383,7 +1241,6 @@ window.App = (function () {
             </button>
           </div>
         </div>
-
         <!-- Sağ: 7 Coğrafi Bölge İlerleme Durumu -->
         <div class="lg:col-span-8 glass-panel rounded-3xl p-6 space-y-4">
           <h3 class="text-lg font-extrabold text-white">📊 Türkiye 7 Coğrafi Bölge Keşif İlerlemesi</h3>
@@ -1408,7 +1265,6 @@ window.App = (function () {
       </div>
     `;
   }
-
   // ==========================================================================
   // 9. YENİ SEYAHAT / UÇUŞ EKLEME FORMU
   // ==========================================================================
@@ -1417,61 +1273,49 @@ window.App = (function () {
     const toSel = document.getElementById("formToPlate");
     const acSel = document.getElementById("formAircraftId");
     if (!fromSel || !toSel || !acSel) return;
-
     const optionsHtml = window.TURKEY_PROVINCES.map(
       p => `<option value="${p.plate}" ${p.plate === 34 ? "selected" : ""}>${p.code} - ${p.name} ${p.airport ? `(${p.airport})` : ""}</option>`
     ).join("");
     fromSel.innerHTML = optionsHtml;
-
     toSel.innerHTML = window.TURKEY_PROVINCES.map(
       p => `<option value="${p.plate}" ${p.plate === 6 ? "selected" : ""}>${p.code} - ${p.name} ${p.airport ? `(${p.airport})` : ""}</option>`
     ).join("");
-
     acSel.innerHTML = window.AIRCRAFT_CATALOG.map(
       a => `<option value="${a.id}">${a.fullName} (${a.icao})</option>`
     ).join("");
   }
-
   let uploadedTicketDataUrl = null;
-
   function toggleFlightFields() {
     const type = document.getElementById("formTransportType").value;
     const fields = document.getElementById("flightSpecificFields");
     const scannerBox = document.getElementById("smartTicketScannerBox");
     const corridorBox = document.getElementById("highwayCorridorBox");
-
     if (fields) fields.classList.toggle("hidden", type !== "plane");
     if (scannerBox) scannerBox.classList.toggle("hidden", type !== "plane");
     if (corridorBox) corridorBox.classList.toggle("hidden", type === "plane");
-
     if (type !== "plane") {
       updateHighwayCorridorPreview();
     }
   }
-
   function updateHighwayCorridorPreview() {
     const type = document.getElementById("formTransportType")?.value || "plane";
     const corridorBox = document.getElementById("highwayCorridorBox");
     const chipsContainer = document.getElementById("highwayCorridorChips");
     if (!corridorBox || !chipsContainer) return;
-
     if (type === "plane") {
       corridorBox.classList.add("hidden");
       return;
     }
-
     corridorBox.classList.remove("hidden");
     const fromPlate = Number(document.getElementById("formFromPlate")?.value || 34);
     const toPlate = Number(document.getElementById("formToPlate")?.value || 6);
     const fromP = window.TURKEY_PROVINCES.find(p => p.plate === fromPlate);
     const toP = window.TURKEY_PROVINCES.find(p => p.plate === toPlate);
     const transitProvs = window.HighwayCorridorEngine.findTransitProvinces(fromPlate, toPlate);
-
     if (transitProvs.length === 0) {
       chipsContainer.innerHTML = `<span class="text-slate-400">Komşu veya doğrudan bağlantılı şehirler (ara geçiş ili yok).</span>`;
       return;
     }
-
     chipsContainer.innerHTML = `
       <span class="px-2 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 font-bold">${fromP?.name || ""}</span>
       <span class="text-slate-500">➔</span>
@@ -1484,7 +1328,6 @@ window.App = (function () {
       <span class="px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold">${toP?.name || ""}</span>
     `;
   }
-
   // ==========================================================================
   // 10. AKILLI BİLET FOTOĞRAFI / OCR OKUYUCU
   // ==========================================================================
@@ -1496,7 +1339,6 @@ window.App = (function () {
       statusBox.classList.remove("hidden");
       statusBox.textContent = `🤖 "${file.name}" bilet görseli analiz ediliyor...`;
     }
-
     const reader = new FileReader();
     reader.onload = function (e) {
       uploadedTicketDataUrl = e.target.result;
@@ -1506,7 +1348,6 @@ window.App = (function () {
     };
     reader.readAsDataURL(file);
   }
-
   function runSampleTicketScan() {
     const sampleText = "TK2026 IST AYT 10.11.2026 09:40 11:05 Koltuk 14A Kapı 208 Airbus A321neo";
     const inp = document.getElementById("ocrRawTextInput");
@@ -1514,7 +1355,6 @@ window.App = (function () {
     const parsed = window.SmartTicketScanner.parseTicketText(sampleText);
     applyParsedTicketToForm(parsed, "⚡ Örnek bilet (TK2026 • IST → AYT • Airbus A321neo • Koltuk 14A • Kapı 208) otomatik çözümlendi!");
   }
-
   function parseManualTicketText() {
     const raw = document.getElementById("ocrRawTextInput")?.value || "";
     if (!raw.trim()) {
@@ -1524,7 +1364,6 @@ window.App = (function () {
     const parsed = window.SmartTicketScanner.parseTicketText(raw);
     applyParsedTicketToForm(parsed, `✅ Bilet metni çözümlendi: ${parsed.airline} ${parsed.flightNo} • Koltuk ${parsed.seat}`);
   }
-
   function applyParsedTicketToForm(parsed, message) {
     document.getElementById("formTransportType").value = "plane";
     toggleFlightFields();
@@ -1538,14 +1377,12 @@ window.App = (function () {
     document.getElementById("formGate").value = parsed.gate;
     document.getElementById("formAircraftId").value = parsed.aircraftId;
     document.getElementById("formDate").value = parsed.date;
-
     const statusBox = document.getElementById("ocrScanStatus");
     if (statusBox) {
       statusBox.classList.remove("hidden");
       statusBox.textContent = message;
     }
   }
-
   function handleAddFlightSubmit(event) {
     event.preventDefault();
     const transportType = document.getElementById("formTransportType").value;
@@ -1553,16 +1390,13 @@ window.App = (function () {
     const fromPlate = Number(document.getElementById("formFromPlate").value);
     const toPlate = Number(document.getElementById("formToPlate").value);
     const notes = document.getElementById("formNotes").value || "";
-
     const fromProv = window.TURKEY_PROVINCES.find(p => p.plate === fromPlate);
     const toProv = window.TURKEY_PROVINCES.find(p => p.plate === toPlate);
     if (!fromProv || !toProv) return;
-
     // Varış ilini otomatik "visited" olarak işaretle
     if (!state.provinceStatuses[toPlate]) {
       state.provinceStatuses[toPlate] = "visited";
     }
-
     // Karayolu ise geçiş illerini kontrol et ve otomatik "passed" (İçinden Geçtim) işaretle
     let transitPlates = [];
     if (transportType !== "plane") {
@@ -1577,9 +1411,7 @@ window.App = (function () {
         });
       }
     }
-
     const km = window.AviationUtils.calculateDistanceKm(fromProv.lat, fromProv.lon, toProv.lat, toProv.lon);
-
     if (transportType === "plane") {
       const airline = document.getElementById("formAirline").value;
       const flightNo = (document.getElementById("formFlightNo").value || "TK2026").toUpperCase();
@@ -1589,7 +1421,6 @@ window.App = (function () {
       const seat = (document.getElementById("formSeat").value || "20A").toUpperCase();
       const gate = document.getElementById("formGate").value || "-";
       const ac = window.AviationUtils.getAircraft(aircraftId);
-
       const newFlight = {
         id: `FL-${flightNo}-${Date.now()}`,
         tripId: `TRIP-${Date.now()}`,
@@ -1631,11 +1462,9 @@ window.App = (function () {
         ticketImage: uploadedTicketDataUrl,
         notes
       };
-
       state.flights.push(newFlight);
       uploadedTicketDataUrl = null;
     }
-
     state.trips.unshift({
       id: `TRIP-${Date.now()}`,
       title: `${fromProv.name} ➔ ${toProv.name} Seyahati`,
@@ -1654,13 +1483,11 @@ window.App = (function () {
       summary: notes || `${fromProv.name} şehrinden ${toProv.name} şehrine seyahat.`,
       tags: [fromProv.name, toProv.name, ...(transitPlates.length ? [`+${transitPlates.length} Geçiş İli`] : [])]
     });
-
     saveState();
     closeModal("addTripModal");
     selectedProvincePlate = toPlate;
     renderAll();
   }
-
   // ==========================================================================
   // 11. PAYLAŞILABİLİR UÇUŞ & SEYAHAT PASAPORTU KARTI (CANVAS PNG ÜRETİCİ)
   // ==========================================================================
@@ -1670,14 +1497,12 @@ window.App = (function () {
     modal.classList.remove("hidden");
     renderPassportCanvas();
   }
-
   function renderPassportCanvas() {
     const canvas = document.getElementById("passportCanvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const W = canvas.width;
     const H = canvas.height;
-
     // 1. Arka Plan Gradyanı
     const bgGrad = ctx.createLinearGradient(0, 0, W, H);
     bgGrad.addColorStop(0, "#040914");
@@ -1685,25 +1510,20 @@ window.App = (function () {
     bgGrad.addColorStop(1, "#061220");
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
-
     // Dekoratif Çerçeve
     ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
     ctx.lineWidth = 4;
     ctx.strokeRect(36, 36, W - 72, H - 72);
-
     // 2. Üst Başlık & Melih Profili
     ctx.fillStyle = "#38bdf8";
     ctx.font = "bold 24px Inter, sans-serif";
     ctx.fillText("ROTAM TÜRKİYE • SEYAHAT & HAVACILIK PASAPORTU", 76, 105);
-
     ctx.fillStyle = "#ffffff";
     ctx.font = "800 54px Inter, sans-serif";
     ctx.fillText(state.profile.name.toUpperCase(), 76, 175);
-
     ctx.fillStyle = "#10b981";
     ctx.font = "bold 26px JetBrains Mono, monospace";
     ctx.fillText(`${state.profile.handle} • Favori Koltuk: 20A (Cam Kenarı)`, 76, 218);
-
     // 3. 4 Ana İstatistik Kutusu
     const statuses = state.provinceStatuses || {};
     const visitedCount = Object.keys(statuses).filter(k => statuses[k] === "visited" || statuses[k] === "home").length;
@@ -1711,14 +1531,12 @@ window.App = (function () {
     const flights = state.flights || [];
     const totalKm = flights.reduce((a, f) => a + (Number(f.distanceKm) || 0), 0);
     const uniqueModels = [...new Set(flights.map(f => f.aircraftName))].join(" • ");
-
     const stats = [
       { label: "KEŞFEDİLEN İLLER", val: `${visitedCount} / 81 İl`, sub: passedCount ? `+${passedCount} Geçiş İli` : "34 İstanbul & 38 Kayseri", color: "#10b981" },
       { label: "TOPLAM UÇUŞ", val: `${flights.length} Uçuş`, sub: "SAW ⇄ ASR (Gidiş-Dönüş)", color: "#f59e0b" },
       { label: "UÇUŞ MESAFESİ", val: `${totalKm.toLocaleString("tr-TR")} km`, sub: "Havada: 2 sa 50 dk", color: "#38bdf8" },
       { label: "UÇAK HANGARIM", val: "2 Model", sub: "Airbus A321 & A321neo", color: "#a855f7" }
     ];
-
     stats.forEach((st, idx) => {
       const bx = 76 + (idx % 2) * 474;
       const by = 260 + Math.floor(idx / 2) * 165;
@@ -1729,20 +1547,16 @@ window.App = (function () {
       ctx.roundRect(bx, by, 454, 145, 22);
       ctx.fill();
       ctx.stroke();
-
       ctx.fillStyle = "#94a3b8";
       ctx.font = "bold 20px Inter, sans-serif";
       ctx.fillText(st.label, bx + 28, by + 42);
-
       ctx.fillStyle = st.color;
       ctx.font = "800 42px JetBrains Mono, monospace";
       ctx.fillText(st.val, bx + 28, by + 95);
-
       ctx.fillStyle = "#cbd5e1";
       ctx.font = "600 18px Inter, sans-serif";
       ctx.fillText(st.sub, bx + 28, by + 125);
     });
-
     // 4. Mini Türkiye Haritası & SAW ⇄ ASR Rota Çizimi
     const mapBoxY = 610;
     const mapBoxH = 380;
@@ -1752,13 +1566,11 @@ window.App = (function () {
     ctx.roundRect(76, mapBoxY, W - 152, mapBoxH, 26);
     ctx.fill();
     ctx.stroke();
-
     ctx.save();
     ctx.translate(76, mapBoxY + 10);
     const scaleX = (W - 152) / 1200;
     const scaleY = (mapBoxH - 20) / 560;
     ctx.scale(scaleX, scaleY);
-
     window.TURKEY_PROVINCES.forEach(p => {
       const [px, py] = window.TurkeyMapEngine.project(p.lat, p.lon);
       const st = statuses[p.plate];
@@ -1767,7 +1579,6 @@ window.App = (function () {
       ctx.fillStyle = st === "home" ? "#0ea5e9" : st === "visited" ? "#10b981" : st === "passed" ? "#f59e0b" : "#1e293b";
       ctx.fill();
     });
-
     // SAW ⇄ ASR Yayları
     const saw = window.AviationUtils.getAirport("SAW");
     const asr = window.AviationUtils.getAirport("ASR");
@@ -1780,7 +1591,6 @@ window.App = (function () {
       ctx.moveTo(x1, y1);
       ctx.quadraticCurveTo((x1 + x2) / 2, (y1 + y2) / 2 - 55, x2, y2);
       ctx.stroke();
-
       ctx.strokeStyle = "#38bdf8";
       ctx.beginPath();
       ctx.moveTo(x2, y2);
@@ -1788,7 +1598,6 @@ window.App = (function () {
       ctx.stroke();
     }
     ctx.restore();
-
     // 5. Alt Biniş Kartı Özetleri (PC2730 & VF3181)
     flights.slice(0, 2).forEach((f, i) => {
       const fy = 1020 + i * 115;
@@ -1799,21 +1608,17 @@ window.App = (function () {
       ctx.roundRect(76, fy, W - 152, 96, 18);
       ctx.fill();
       ctx.stroke();
-
       ctx.fillStyle = i === 0 ? "#f59e0b" : "#38bdf8";
       ctx.font = "bold 24px JetBrains Mono, monospace";
       ctx.fillText(`${f.airline.toUpperCase()} • ${f.flightNumber}`, 104, fy + 40);
-
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 26px Inter, sans-serif";
       ctx.fillText(`${f.fromIata} (${f.departureTime}) ➔ ${f.toIata} (${f.arrivalTime}) • ${f.aircraftName} • Koltuk ${f.seat}`, 104, fy + 76);
     });
-
     ctx.fillStyle = "#64748b";
     ctx.font = "600 18px JetBrains Mono, monospace";
     ctx.fillText("Rotam Türkiye • Melih'in Kişisel Seyahat & FlightRadar Arşivi", 76, H - 55);
   }
-
   function downloadPassportPng() {
     renderPassportCanvas();
     const canvas = document.getElementById("passportCanvas");
@@ -1823,12 +1628,10 @@ window.App = (function () {
     link.href = canvas.toDataURL("image/png");
     link.click();
   }
-
   function closeModal(modalId) {
     const m = document.getElementById(modalId);
     if (m) m.classList.add("hidden");
   }
-
   function exportJsonData() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -1838,27 +1641,22 @@ window.App = (function () {
     a.click();
     URL.revokeObjectURL(url);
   }
-
   function resetToDefault() {
     localStorage.removeItem(STORAGE_KEY);
     state = JSON.parse(JSON.stringify(window.DEFAULT_MELIH_STATE));
     saveState();
     renderAll();
   }
-
   let deferredPwaPrompt = null;
-
   window.addEventListener("beforeinstallprompt", e => {
     e.preventDefault();
     deferredPwaPrompt = e;
   });
-
   if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("sw.js").catch(() => {});
     });
   }
-
   function triggerPwaInstall() {
     if (deferredPwaPrompt) {
       deferredPwaPrompt.prompt();
@@ -1874,9 +1672,7 @@ window.App = (function () {
       );
     }
   }
-
   document.addEventListener("DOMContentLoaded", init);
-
   return {
     switchTab,
     setMapMode,

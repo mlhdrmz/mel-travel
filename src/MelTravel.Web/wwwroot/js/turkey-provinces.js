@@ -1,7 +1,6 @@
 // ============================================================================
 // MelTravel - Türkiye 81 İl Coğrafi Veri Seti ve Yüksek Hassasiyetli SVG Motoru
 // ============================================================================
-
 window.TURKEY_PROVINCES = [
   { plate: 1, code: "01", name: "Adana", region: "Akdeniz", lat: 37.00, lon: 35.32, airport: "ADA", population: "2.27M", highlights: ["Taşköprü", "Sabancı Merkez Camii", "Seyhan Baraj Gölü", "Varda Köprüsü", "Kapıkaya Kanyonu"], foods: ["Adana Kebap", "Şalgam Suyu", "Bici Bici", "Şırdan"], summary: "Çukurova'nın bereketli topraklarında kurulu, tarihi Taşköprü'sü ve eşsiz mutfak kültürüyle Akdeniz'in gastronomi başkenti.", photo: "https://images.unsplash.com/photo-1589561454226-796a8aa89b05?auto=format&fit=crop&w=900&q=80" },
   { plate: 2, code: "02", name: "Adıyaman", region: "Güneydoğu Anadolu", lat: 37.76, lon: 38.28, airport: "ADF", population: "604B", highlights: ["Nemrut Dağı Tümülüsü", "Cendere Köprüsü", "Arsameia Antik Kenti", "Perre Antik Kenti"], foods: ["Adıyaman Çiğ Köftesi", "Adıyaman Tavası", "Hıtap"], summary: "Kommagene Krallığı'nın dev heykelleriyle ünlü Nemrut Dağı'nda dünyanın en etkileyici gündoğumu manzarasına ev sahipliği yapar.", photo: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=900&q=80" },
@@ -85,12 +84,10 @@ window.TURKEY_PROVINCES = [
   { plate: 80, code: "80", name: "Osmaniye", region: "Akdeniz", lat: 37.07, lon: 36.25, airport: "ADA", population: "559B", highlights: ["Karatepe-Aslantaş Açık Hava Müzesi", "Kastabala Antik Kenti", "Zorkun Yaylası", "Karaçay Şelalesi"], foods: ["Osmaniye Yer Fıstığı", "Bayram Kömbesi", "Tirşik Çorbası", "Zorkun Tava"], summary: "Geç Hitit döneminin en önemli açık hava müzesi Karatepe-Aslantaş, sütunlu caddesiyle Kastabala ve kaleler şehri.", photo: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=900&q=80" },
   { plate: 81, code: "81", name: "Düzce", region: "Karadeniz", lat: 40.84, lon: 31.16, airport: null, population: "409B", highlights: ["Samandere & Güzeldere Şelaleleri", "Akçakoca Ceneviz Kalesi", "Prusias ad Hypium (Konuralp) Antik Tiyatrosu", "Efteni Gölü"], foods: ["Düzce Köftesi", "Çerkez Tavuğu", "Melengüçceği Tatlısı", "Konuralp Pirinci"], summary: "81. ilimiz; şelaleleri, Kuş Cenneti Efteni Gölü, Konuralp antik tiyatrosu ve Karadeniz kıyısındaki Akçakoca sahilleriyle doğa rotası.", photo: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=900&q=80" }
 ];
-
 // ============================================================================
 // Yüksek Hassasiyetli Türkiye Sınır Poligonları & Su Geçirmez (Watertight)
 // 81 İl Voronoi/Kıyı Kırpma (Sutherland-Hodgman) Harita Motoru
 // ============================================================================
-
 window.TurkeyMapEngine = (function () {
   const MAP_WIDTH = 1200;
   const MAP_HEIGHT = 560;
@@ -98,19 +95,16 @@ window.TurkeyMapEngine = (function () {
   const LON_MAX = 45.0;
   const LAT_MIN = 35.7;
   const LAT_MAX = 42.3;
-
   function project(lat, lon) {
     const x = 35 + ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * (MAP_WIDTH - 70);
     const y = MAP_HEIGHT - 30 - ((lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * (MAP_HEIGHT - 60);
     return [Number(x.toFixed(1)), Number(y.toFixed(1))];
   }
-
   function unproject(x, y) {
     const lon = LON_MIN + ((x - 35) / (MAP_WIDTH - 70)) * (LON_MAX - LON_MIN);
     const lat = LAT_MIN + ((MAP_HEIGHT - 30 - y) / (MAP_HEIGHT - 60)) * (LAT_MAX - LAT_MIN);
     return { lat, lon };
   }
-
   // Trakya (Avrupa Yakası) yüksek hassasiyetli kıyı ve sınır koordinatları [lat, lon]
   const THRACE_COORDS = [
     [40.72, 26.05], [40.63, 26.38], [40.58, 26.72], [40.38, 26.48], [40.05, 26.18],
@@ -119,7 +113,6 @@ window.TurkeyMapEngine = (function () {
     [41.48, 28.32], [41.88, 27.98], [41.98, 28.02], [41.96, 27.45], [42.02, 27.00],
     [41.92, 26.55], [41.68, 26.35], [41.35, 26.52], [41.02, 26.30]
   ];
-
   // Anadolu (Asya Yakası) yüksek hassasiyetli kıyı ve sınır koordinatları [lat, lon]
   const ANATOLIA_COORDS = [
     // İstanbul Anadolu & Karadeniz Kıyısı (Batıdan Doğuya)
@@ -148,18 +141,15 @@ window.TurkeyMapEngine = (function () {
     [40.38, 26.68], [40.45, 27.85], [40.38, 28.88], [40.42, 29.15], [40.65, 28.95],
     [40.72, 29.38], [40.74, 29.92], [40.82, 29.35], [40.98, 29.02]
   ];
-
   // Van Gölü koordinatları
   const LAKE_VAN_COORDS = [
     [38.42, 42.25], [38.75, 42.58], [38.98, 43.35], [38.82, 43.62],
     [38.48, 43.38], [38.30, 43.05], [38.32, 42.55]
   ];
-
   // Tuz Gölü koordinatları
   const LAKE_TUZ_COORDS = [
     [39.08, 33.25], [39.02, 33.58], [38.58, 33.68], [38.55, 33.32], [38.82, 33.18]
   ];
-
   // Sutherland-Hodgman yarı-düzlem kırpma: P noktasının A'ya B'den daha yakın olduğu yarı düzlem
   function clipPolygonByBisector(poly, ax, ay, bx, by) {
     if (!poly || poly.length < 3) return [];
@@ -167,12 +157,10 @@ window.TurkeyMapEngine = (function () {
     const my = (ay + by) / 2;
     const nx = bx - ax;
     const ny = by - ay;
-
     // P içeride mi? (P - M) . N <= 0
     function inside(p) {
       return (p[0] - mx) * nx + (p[1] - my) * ny <= 0;
     }
-
     function intersect(p1, p2) {
       const dx = p2[0] - p1[0];
       const dy = p2[1] - p1[1];
@@ -181,14 +169,12 @@ window.TurkeyMapEngine = (function () {
       const t = ((mx - p1[0]) * nx + (my - p1[1]) * ny) / denom;
       return [p1[0] + t * dx, p1[1] + t * dy];
     }
-
     const out = [];
     for (let i = 0; i < poly.length; i++) {
       const cur = poly[i];
       const prev = poly[(i + poly.length - 1) % poly.length];
       const curIn = inside(cur);
       const prevIn = inside(prev);
-
       if (curIn) {
         if (!prevIn) out.push(intersect(prev, cur));
         out.push(cur);
@@ -198,24 +184,18 @@ window.TurkeyMapEngine = (function () {
     }
     return out;
   }
-
   function coordsToProjectedPoly(coordList) {
     return coordList.map(([lat, lon]) => project(lat, lon));
   }
-
   function polyToSvgPath(poly) {
     if (!poly || poly.length < 3) return "";
     return "M " + poly.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" L ") + " Z";
   }
-
   let cachedPaths = null;
-
   function buildProvincePaths() {
     if (cachedPaths) return cachedPaths;
-
     const thracePoly = coordsToProjectedPoly(THRACE_COORDS);
     const anatoliaPoly = coordsToProjectedPoly(ANATOLIA_COORDS);
-
     // Trakya'da yer alan iller: 22 Edirne, 39 Kırklareli, 59 Tekirdağ + 34 İstanbul (Avrupa) + 17 Çanakkale (Gelibolu)
     const thraceSeeds = [
       { plate: 22, pt: project(41.55, 26.52) },
@@ -224,7 +204,6 @@ window.TurkeyMapEngine = (function () {
       { plate: 34, pt: project(41.15, 28.65) },
       { plate: 17, pt: project(40.32, 26.45) }
     ];
-
     // Anadolu'da yer alan 78 il (22, 39, 59 hariç tüm iller)
     const anatoliaSeeds = window.TURKEY_PROVINCES
       .filter(p => p.plate !== 22 && p.plate !== 39 && p.plate !== 59)
@@ -234,9 +213,7 @@ window.TurkeyMapEngine = (function () {
         if (p.plate === 17) return { plate: 17, pt: project(39.92, 26.68) };
         return { plate: p.plate, pt: project(p.lat, p.lon) };
       });
-
     const pathsByPlate = {};
-
     // 1. Trakya hücrelerini kırp
     thraceSeeds.forEach(seed => {
       let cell = thracePoly.slice();
@@ -247,7 +224,6 @@ window.TurkeyMapEngine = (function () {
       const d = polyToSvgPath(cell);
       pathsByPlate[seed.plate] = (pathsByPlate[seed.plate] ? pathsByPlate[seed.plate] + " " : "") + d;
     });
-
     // 2. Anadolu hücrelerini kırp
     anatoliaSeeds.forEach(seed => {
       let cell = anatoliaPoly.slice();
@@ -261,7 +237,6 @@ window.TurkeyMapEngine = (function () {
       const d = polyToSvgPath(cell);
       pathsByPlate[seed.plate] = (pathsByPlate[seed.plate] ? pathsByPlate[seed.plate] + " " : "") + d;
     });
-
     cachedPaths = {
       provinces: pathsByPlate,
       lakeVan: polyToSvgPath(coordsToProjectedPoly(LAKE_VAN_COORDS)),
@@ -269,10 +244,8 @@ window.TurkeyMapEngine = (function () {
       thraceOutline: polyToSvgPath(thracePoly),
       anatoliaOutline: polyToSvgPath(anatoliaPoly)
     };
-
     return cachedPaths;
   }
-
   return {
     MAP_WIDTH,
     MAP_HEIGHT,

@@ -1,7 +1,6 @@
 // ============================================================================
 // MelTravel - Melih Kişisel Profil & Başlangıç Uçuş/Seyahat Verisi
 // ============================================================================
-
 window.DEFAULT_MELIH_STATE = {
   version: 2,
   profile: {
@@ -15,13 +14,11 @@ window.DEFAULT_MELIH_STATE = {
     favoriteAircraft: "Airbus A321 / A321neo",
     bio: "Türkiye'de gezdiğim şehirlerin haritası, karayolu/havayolu seyahat rotalarım ve bindiğim uçakların FlightRadar & teknik arşivi."
   },
-
   // Plaka Kodu -> Durum: "home" | "visited" | "passed" | "wishlist"
   provinceStatuses: {
     34: "home",
     38: "visited"
   },
-
   // Şehir bazlı kişisel anılar, notlar ve kullanıcı fotoğrafları
   cityMemories: {
     34: {
@@ -47,7 +44,6 @@ window.DEFAULT_MELIH_STATE = {
       ]
     }
   },
-
   // Uçuş Kayıtları (FlightRadar & Biniş Kartı Detaylı)
   flights: [
     {
@@ -137,7 +133,6 @@ window.DEFAULT_MELIH_STATE = {
       notes: "Akşam 21:25 Kayseri (ASR) Kapı 206 kalkışlı, 23:00 İstanbul Sabiha Gökçen (SAW) varışlı AJet Airbus A321neo uçuşu. Biniş 20:40, Bölge C, Seq No 9, Koltuk 20A."
     }
   ],
-
   // Seyahatler (Uçak, Araba, Otobüs, Tren, Gemi)
   trips: [
     {

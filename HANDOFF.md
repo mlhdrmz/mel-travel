@@ -1,9 +1,9 @@
 # HANDOFF.md — Rotam Türkiye (`mel-travel`)
 
-## Son Durum (09.11.2026)
+## Son Durum (10.11.2026)
 - **Geliştirici / Asistan:** Antigravity
 - **Proje Dizini:** `C:\Users\Melih Durmaz\.gemini\antigravity\scratch\mel-travel`
-- **Durum:** v1.1 tamamlandı (Akıllı Bilet OCR Okuyucu, Karayolu Güzergâh & Geçiş İlleri Motoru, Paylaşılabilir Pasaport PNG Kartı ve Vercel yapılandırması eklendi). Derleme ve 22 otomatik testin tamamı geçti.
+- **Durum:** v1.2 tamamlandı (PWA `manifest.json`, `sw.js`, `icon.svg`, Git deposu kurulumu, Akıllı Bilet OCR Okuyucu, Karayolu Güzergâh & Geçiş İlleri Motoru, Paylaşılabilir Pasaport PNG Kartı ve `vercel.json`). Derleme ve 25 otomatik testin tamamı geçti (`25 Başarılı, 0 Başarısız`).
 
 ## Tamamlanan Özellikler
 1. **81 İl Türkiye Haritası & Hibrit Görünüm (`turkey-provinces.js`, `app.js`):**
@@ -15,8 +15,9 @@
    - Gizlilik kuralı gereği PNR ve bilet numaraları kaynak kodda maskelenmiştir (`****P9`, `****Y4`), yerel bilet görselleri `.gitignore` kapsamına alınmıştır.
 3. **Uçak Hangarım & Ansiklopedi (`aviation-data.js`):**
    - Airbus A321 ve Airbus A321neo başta olmak üzere 9 uçak modeli, fotoğraflı teknik kartlar, `20A` kabin koltuk şeması ve `TC-...` kuyruk tescili sorgulama.
-4. **v1.1 Yeni Modüller (`aviation-data.js`, `app.js`, `vercel.json`):**
+4. **v1.1 & v1.2 Modüller (`aviation-data.js`, `app.js`, `manifest.json`, `sw.js`, `vercel.json`):**
    - **Akıllı Bilet & Biniş Kartı Okuyucu (`SmartTicketScanner`):** Bilet fotoğrafı veya metninden havayolu, uçuş kodu, kalkış/varış havalimanı, saat, kapı, koltuk ve uçak modelini otomatik ayrıştırma.
    - **Akıllı Karayolu Güzergâh & Geçiş İlleri Hesaplayıcı (`HighwayCorridorEngine`):** Özel araba veya otobüs seçildiğinde kalkış ve varış ili arasındaki geçiş illerini otomatik bulup haritada *"İçinden Geçtim"* olarak işaretleme ve karayolu rotasını çizme.
    - **Paylaşılabilir Seyahat & Havacılık Pasaportu (PNG):** `1080×1350` yüksek çözünürlüklü Story/Özet kartı çizimi ve tek tıkla PNG indirme.
-   - **Vercel Hazırlığı (`vercel.json`):** Statik dağıtım (`src/MelTravel.Web/wwwroot`) yapılandırması eklendi.
+   - **PWA (Mobil/Masaüstü Uygulama Kurulumu):** `manifest.json`, çevrimdışı çalışan `sw.js` (Service Worker), `icon.svg` ve üst menüde `📲 Uygulamayı Kur` butonu.
+   - **Git & Vercel Hazırlığı:** Yerel Git deposu başlatıldı ve ilk commit alındı; Vercel `team_mqdL2ekK29WQFnpV1I6oYIcm` yetkilendirme onayı bekleniyor.

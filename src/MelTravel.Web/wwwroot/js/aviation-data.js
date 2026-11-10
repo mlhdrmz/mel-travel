@@ -1,7 +1,6 @@
 // ============================================================================
 // MelTravel - Havacılık, Havalimanları, Uçak Ansiklopedisi ve FlightRadar Verisi
 // ============================================================================
-
 window.TURKEY_AIRPORTS = [
   { iata: "SAW", icao: "LTFJ", name: "İstanbul Sabiha Gökçen Havalimanı", city: "İstanbul", plate: 34, lat: 40.8986, lon: 29.3092, runway: "06L/24R (3000m) & 06R/24L (3500m)", elevationFt: 312, hubFor: ["Pegasus Airlines", "AJet"] },
   { iata: "IST", icao: "LTFM", name: "İstanbul Havalimanı", city: "İstanbul", plate: 34, lat: 41.2753, lon: 28.7519, runway: "16L/34R, 17L/35R, 18/36 (4100m)", elevationFt: 325, hubFor: ["Türk Hava Yolları"] },
@@ -31,7 +30,6 @@ window.TURKEY_AIRPORTS = [
   { iata: "EDO", icao: "LTFD", name: "Balıkesir Koca Seyit Havalimanı", city: "Balıkesir", plate: 10, lat: 39.5546, lon: 27.0138, runway: "05/23 (3000m)", elevationFt: 185, hubFor: ["Kuzey Ege"] },
   { iata: "VAS", icao: "LTAR", name: "Sivas Nuri Demirağ Havalimanı", city: "Sivas", plate: 58, lat: 39.8138, lon: 36.9035, runway: "01/19 (3811m)", elevationFt: 5236, hubFor: ["İç Anadolu"] }
 ];
-
 window.AIRCRAFT_CATALOG = [
   {
     id: "A321",
@@ -298,7 +296,6 @@ window.AIRCRAFT_CATALOG = [
     ]
   }
 ];
-
 // Yerleşik Türk Tescil (Tail Number) Veritabanı + Canlı API Desteği
 window.TURKISH_TAIL_REGISTRY = {
   "TC-RBA": { reg: "TC-RBA", aircraftId: "A321NEO", type: "Airbus A321-251NX (A321neo)", airline: "Pegasus Airlines", delivered: "2019", msn: "8934", engines: "2x CFM LEAP-1A32", base: "SAW (Sabiha Gökçen)", note: "Pegasus filosunun ilk Airbus A321neo uçaklarından." },
@@ -312,16 +309,13 @@ window.TURKISH_TAIL_REGISTRY = {
   "TC-LLB": { reg: "TC-LLB", aircraftId: "B789", type: "Boeing 787-9 Dreamliner", airline: "Türk Hava Yolları", delivered: "2019", msn: "65802", engines: "2x GEnx-1B", base: "IST", note: "Yeni nesil kompozit gövdeli Dreamliner." },
   "TC-LGA": { reg: "TC-LGA", aircraftId: "A359", type: "Airbus A350-941", airline: "Türk Hava Yolları", delivered: "2020", msn: "354", engines: "2x RR Trent XWB", base: "IST", note: "THY filosunun ilk Airbus A350-900 uçağı." }
 };
-
 window.AviationUtils = {
   getAirport(iata) {
     return window.TURKEY_AIRPORTS.find(a => a.iata.toUpperCase() === (iata || "").toUpperCase()) || null;
   },
-
   getAircraft(id) {
     return window.AIRCRAFT_CATALOG.find(a => a.id.toUpperCase() === (id || "").toUpperCase()) || window.AIRCRAFT_CATALOG[0];
   },
-
   calculateDistanceKm(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const toRad = d => (d * Math.PI) / 180;
@@ -332,7 +326,6 @@ window.AviationUtils = {
       Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
     return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   },
-
   calculateBearing(lat1, lon1, lat2, lon2) {
     const toRad = d => (d * Math.PI) / 180;
     const toDeg = r => (r * 180) / Math.PI;
@@ -343,14 +336,12 @@ window.AviationUtils = {
       Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
     return Math.round((toDeg(Math.atan2(y, x)) + 360) % 360);
   },
-
   formatDuration(minutes) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return h > 0 ? `${h} sa ${m} dk` : `${m} dk`;
   }
 };
-
 // ============================================================================
 // Akıllı Karayolu Güzergâh & Geçiş İlleri Hesaplayıcı (HighwayCorridorEngine)
 // ============================================================================
@@ -370,33 +361,27 @@ window.HighwayCorridorEngine = {
     "6-7":   [42],                         // Ankara -> Antalya
     "6-35":  [26, 3, 64, 45]               // Ankara -> İzmir
   },
-
   findTransitProvinces(fromPlate, toPlate) {
     fromPlate = Number(fromPlate);
     toPlate = Number(toPlate);
     if (!fromPlate || !toPlate || fromPlate === toPlate) return [];
-
     const directKey = `${fromPlate}-${toPlate}`;
     const reverseKey = `${toPlate}-${fromPlate}`;
-
     if (this.knownCorridors[directKey]) {
       return this.knownCorridors[directKey].map(pl => window.TURKEY_PROVINCES.find(p => p.plate === pl)).filter(Boolean);
     }
     if (this.knownCorridors[reverseKey]) {
       return this.knownCorridors[reverseKey].slice().reverse().map(pl => window.TURKEY_PROVINCES.find(p => p.plate === pl)).filter(Boolean);
     }
-
     // Genel Coğrafi Koridor Hesaplayıcı (Herhangi iki il arasındaki hat üzerinde kalan iller)
     const fromP = window.TURKEY_PROVINCES.find(p => p.plate === fromPlate);
     const toP = window.TURKEY_PROVINCES.find(p => p.plate === toPlate);
     if (!fromP || !toP) return [];
-
     const ax = fromP.lon, ay = fromP.lat;
     const bx = toP.lon, by = toP.lat;
     const dx = bx - ax, dy = by - ay;
     const lenSq = dx * dx + dy * dy;
     if (lenSq < 0.01) return [];
-
     const candidates = [];
     window.TURKEY_PROVINCES.forEach(p => {
       if (p.plate === fromPlate || p.plate === toPlate) return;
@@ -409,12 +394,10 @@ window.HighwayCorridorEngine = {
         candidates.push({ prov: p, t });
       }
     });
-
     candidates.sort((a, b) => a.t - b.t);
     return candidates.map(c => c.prov);
   }
 };
-
 // ============================================================================
 // Bilet Fotoğrafından & Metninden Otomatik Uçuş Okuyucu (SmartTicketScanner)
 // ============================================================================
@@ -422,7 +405,6 @@ window.SmartTicketScanner = {
   parseTicketText(rawText, fileName = "") {
     const text = `${rawText || ""} ${fileName || ""}`;
     const upper = text.toUpperCase();
-
     // 1. Havayolu ve Uçuş Numarası
     let airline = "Pegasus Airlines";
     let flightNo = "PC2730";
@@ -441,7 +423,6 @@ window.SmartTicketScanner = {
       airline = "Türk Hava Yolları";
       flightNo = "TK2014";
     }
-
     // 2. Kalkış & Varış Havalimanı / Şehir
     const foundAirports = [];
     window.TURKEY_AIRPORTS.forEach(ap => {
@@ -449,27 +430,22 @@ window.SmartTicketScanner = {
       if (idx !== -1) foundAirports.push({ ap, idx });
     });
     foundAirports.sort((a, b) => a.idx - b.idx);
-
     let fromPlate = 34;
     let toPlate = 38;
     if (foundAirports.length >= 2) {
       fromPlate = foundAirports[0].ap.plate;
       toPlate = foundAirports[1].ap.plate;
     }
-
     // 3. Saatler (HH:MM)
     const timeMatches = [...text.matchAll(/\b([01]\d|2[0-3]):([0-5]\d)\b/g)].map(m => m[0]);
     const depTime = timeMatches[0] || "05:30";
     const arrTime = timeMatches[1] || "06:45";
-
     // 4. Koltuk No (örn: 20A, 14F, 12C)
     const seatMatch = upper.match(/\b([1-3]?\d[A-F])\b/);
     const seat = seatMatch ? seatMatch[1] : "20A";
-
     // 5. Kapı No
     const gateMatch = upper.match(/KAPI\s*:?\s*(\d{1,3}[A-Z]?)/) || upper.match(/GATE\s*:?\s*(\d{1,3}[A-Z]?)/);
     const gate = gateMatch ? gateMatch[1] : "-";
-
     // 6. Uçak Modeli
     let aircraftId = "A321";
     if (upper.includes("321NEO") || upper.includes("A21N")) aircraftId = "A321NEO";
@@ -481,14 +457,12 @@ window.SmartTicketScanner = {
     else if (upper.includes("787")) aircraftId = "B789";
     else if (upper.includes("350")) aircraftId = "A359";
     else if (airline === "AJet") aircraftId = "A321NEO";
-
     // 7. Tarih (GG.AA.YYYY veya YYYY-AA-GG)
     let dateStr = "2026-11-08";
     const dMatch = text.match(/(\d{2})[./-](\d{2})[./-](20\d{2})/);
     if (dMatch) {
       dateStr = `${dMatch[3]}-${dMatch[2]}-${dMatch[1]}`;
     }
-
     return {
       airline,
       flightNo,
@@ -503,4 +477,3 @@ window.SmartTicketScanner = {
     };
   }
 };
-
