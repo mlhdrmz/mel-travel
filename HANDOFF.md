@@ -20,4 +20,7 @@
    - **Akıllı Karayolu Güzergâh & Geçiş İlleri Hesaplayıcı (`HighwayCorridorEngine`):** Özel araba veya otobüs seçildiğinde kalkış ve varış ili arasındaki geçiş illerini otomatik bulup haritada *"İçinden Geçtim"* olarak işaretleme ve karayolu rotasını çizme.
    - **Paylaşılabilir Seyahat & Havacılık Pasaportu (PNG):** `1080×1350` yüksek çözünürlüklü Story/Özet kartı çizimi ve tek tıkla PNG indirme.
    - **PWA (Mobil/Masaüstü Uygulama Kurulumu):** `manifest.json`, çevrimdışı çalışan `sw.js` (Service Worker), `icon.svg` ve üst menüde `📲 Uygulamayı Kur` butonu.
-   - **Git & Vercel Hazırlığı:** Tüm kaynak kod `https://github.com/mlhdrmz/mel-travel` (`main` dalı) deposuna başarıyla pushlandı; `vercel.json` ile Vercel üzerinden tek tıkla (`Import -> Deploy`) yayına hazır durumda.
+   - **Git & Vercel Canlı Yayın (`READY`):**
+     - **GitHub Deposu:** `https://github.com/mlhdrmz/mel-travel` (`main` dalı, Vercel ile otomatik bağlı)
+     - **Canlı Production URL:** `https://rotam-turkiye.vercel.app` (`tilion/rotam-turkiye`, Deployment ID: `dpl_FV6X1tb4fsMHmMCmktpb5GU6UrEk`)
+     - **Vercel CLI & Node.js:** `Node.js v22.14.0` ve `Vercel CLI 65.14.0` (`melihdurmazzz91-8072`) kuruldu ve doğrulandı.
