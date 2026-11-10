@@ -1,6 +1,8 @@
 {
   "version": 2,
-  "buildCommand": null,
+  "framework": null,
+  "installCommand": "echo 'No install required'",
+  "buildCommand": "echo 'Rotam Turkiye static build complete'",
   "outputDirectory": "src/MelTravel.Web/wwwroot",
   "cleanUrls": true
 }

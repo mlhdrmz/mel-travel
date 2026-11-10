@@ -1,19 +1,19 @@
 {
-  "name": "Rotam Türkiye • Melih'in Seyahat & FlightRadar Haritası",
-  "short_name": "Rotam Türkiye",
-  "description": "Kişisel Türkiye 81 İl Seyahat Haritası, FlightRadar Uçuş Rotaları ve Uçak Hangarı",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "orientation": "any",
-  "background_color": "#070b14",
-  "theme_color": "#070b14",
-  "lang": "tr-TR",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+"name": "Rotam Türkiye • Melih'in Seyahat & FlightRadar Haritası",
+"short_name": "Rotam Türkiye",
+"description": "Kişisel Türkiye 81 İl Seyahat Haritası, FlightRadar Uçuş Rotaları ve Uçak Hangarı",
+"start_url": "./index.html",
+"display": "standalone",
+"orientation": "any",
+"background_color": "#070b14",
+"theme_color": "#070b14",
+"lang": "tr-TR",
+"icons": [
+{
+"src": "icon.svg",
+"sizes": "any",
+"type": "image/svg+xml",
+"purpose": "any maskable"
+}
+]
 }
