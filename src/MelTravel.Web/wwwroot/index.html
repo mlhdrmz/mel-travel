@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rotam Türkiye" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <title>Rotam Türkiye • Melih'in Seyahat & FlightRadar Haritası</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Leaflet Coğrafi Harita CSS/JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Uygulama Stilleri -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- ÜST NAVİGASYON BAR -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Sol: Logo ve Profil Rozeti -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-sky-500/25">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" class="hidden"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">Rotam Türkiye</h1>
+            <span class="px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/30">
+              FlightRadar & 81 İl
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            <span class="text-emerald-400 font-semibold" id="headerProfileName">Melih Durmaz</span> • Kişisel Seyahat Haritası & Havacılık Günlüğü
+          </p>
+        </div>
+      </div>
+
+      <!-- Orta: Ana Sekmeler -->
+      <nav class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800" id="mainNavTabs">
+        <button data-tab="map" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 bg-sky-500 text-white shadow">
+          <span>🗺️</span>
+          <span>Türkiye Haritası</span>
+        </button>
+        <button data-tab="trips" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800/70">
+          <span>🛫</span>
+          <span>Seyahatlerim & Biletler</span>
+          <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-amber-500/20 text-amber-300 font-mono" id="navFlightBadge">2</span>
+        </button>
+        <button data-tab="aircraft" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800/70">
+          <span>✈️</span>
+          <span>Uçak Hangarım</span>
+        </button>
+        <button data-tab="profile" class="nav-tab-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800/70">
+          <span>👤</span>
+          <span>Melih Profili</span>
+        </button>
+      </nav>
+
+      <!-- Sağ: Hızlı Ekleme, PWA Kurulum ve Pasaport Paylaşım Butonu -->
+      <div class="flex items-center gap-2">
+        <button id="btnInstallPwa" onclick="window.App.triggerPwaInstall()" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-sky-300 border border-sky-500/30 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition" title="Telefon veya Bilgisayara Uygulama Olarak Kur">
+          <span>📲</span>
+          <span class="hidden md:inline">Uygulamayı Kur</span>
+        </button>
+        <button onclick="window.App.openPassportModal()" class="px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition">
+          <span>🛂</span>
+          <span class="hidden sm:inline">Seyahat Pasaportu (PNG)</span>
+        </button>
+        <button id="btnOpenAddModal" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/25 flex items-center gap-1.5 transition">
+          <span>+</span>
+          <span>Seyahat / Uçuş Ekle</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ANA İÇERİK KONTEYNERİ -->
+  <main class="max-w-[1440px] mx-auto px-4 sm:px-6 py-5 space-y-6">
+
+    <!-- ÜST KPI İSTATİSTİK ŞERİDİ -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5" id="kpiStrip">
+      <!-- KPI 1: Gezilen İller -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Keşfedilen Türkiye</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono" id="kpiVisitedCount">2</span>
+            <span class="text-xs text-slate-400 font-semibold">/ 81 İl (<span id="kpiVisitedPercent">%2.5</span>)</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1" id="kpiVisitedSub">34 İstanbul (Merkez) • 38 Kayseri</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl">
+          📍
+        </div>
+      </div>
+
+      <!-- KPI 2: Uçuşlar & Rotalar -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between cursor-pointer" onclick="window.App.switchTab('trips')">
+        <div>
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Kayıtlı Uçuşlarım</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono" id="kpiFlightCount">2</span>
+            <span class="text-xs text-slate-400 font-semibold">Uçuş (SAW ⇄ ASR)</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1" id="kpiFlightSub">PC2730 (Gidiş) & VF3181 (Dönüş)</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-2xl">
+          🎫
+        </div>
+      </div>
+
+      <!-- KPI 3: Bindiğim Uçaklar -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between cursor-pointer" onclick="window.App.switchTab('aircraft')">
+        <div>
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Bindiğim Uçaklar</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl sm:text-3xl font-extrabold text-sky-400 font-mono" id="kpiAircraftCount">2</span>
+            <span class="text-xs text-slate-400 font-semibold">Farklı Model</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1" id="kpiAircraftSub">Airbus A321 & Airbus A321neo</p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-2xl">
+          ✈️
+        </div>
+      </div>
+
+      <!-- KPI 4: Uçuş Mesafesi & Koltuk -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Uçuş Mesafesi & Süre</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl sm:text-3xl font-extrabold text-purple-400 font-mono" id="kpiTotalKm">1.158</span>
+            <span class="text-xs text-slate-400 font-semibold">km (<span id="kpiTotalHours">2s 50dk</span>)</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1">Favori Koltuk: <span class="text-amber-300 font-mono font-bold">20A (Cam)</span></p>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-2xl">
+          📡
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SEKME 1: ANA SAYFA TÜRKİYE HARİTASI & FLIGHTRADAR EKRANI             -->
+    <!-- ==================================================================== -->
+    <section id="tabContent-map" class="space-y-5">
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+
+        <!-- SOL / ORTA SÜTUN (81 İL HARİTASI & FLIGHTRADAR): 8 Kolon -->
+        <div class="xl:col-span-8 space-y-4">
+
+          <!-- Harita Kontrol Çubuğu -->
+          <div class="glass-panel rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+            <!-- Harita Görünüm Modları -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button data-mapmode="hybrid" class="map-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500 text-white shadow flex items-center gap-1.5 transition">
+                <span>🗺️</span>
+                <span>81 İl + Uçuş Rotaları</span>
+              </button>
+              <button data-mapmode="radar" class="map-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800/90 text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                <span>📡</span>
+                <span>FlightRadar Modu</span>
+              </button>
+              <button data-mapmode="leaflet" class="map-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800/90 text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                <span>🌍</span>
+                <span>Coğrafi Harita (Leaflet)</span>
+              </button>
+            </div>
+
+            <!-- Sağ: Rota Seçici ve İl Arama -->
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="routeFilterSelect" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:border-sky-500">
+                <option value="all">✈️ Tüm Uçuş Rotaları (Gidiş & Dönüş)</option>
+                <option value="FL-PC2730-20261108">🟡 Gidiş: PC2730 (SAW → ASR • Airbus A321)</option>
+                <option value="FL-VF3181-20261108">🔵 Dönüş: VF3181 (ASR → SAW • Airbus A321neo)</option>
+                <option value="none">🚫 Rotaları Gizle (Sadece Şehirler)</option>
+              </select>
+
+              <div class="relative">
+                <input id="provinceSearchInput" type="text" placeholder="İl veya plaka ara (örn: 38, Kayseri)..."
+                  class="bg-slate-900 border border-slate-700 text-xs text-white rounded-xl pl-8 pr-3 py-1.5 w-48 sm:w-56 focus:outline-none focus:border-sky-500" />
+                <span class="absolute left-2.5 top-1.5 text-slate-400 text-xs">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANA HARİTA VİEWPORT -->
+          <div class="map-viewport rounded-3xl relative" id="mapViewportContainer">
+            <!-- Radar Grid Overlay -->
+            <div class="radar-grid-overlay absolute inset-0"></div>
+
+            <!-- Üst Bilgi Barı (Harita İçi) -->
+            <div class="relative z-10 px-5 pt-4 pb-1 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+              <div>
+                <span class="text-[11px] font-mono uppercase tracking-widest text-sky-400 block" id="mapModeSubtitle">
+                  İNTERAKTİF TÜRKİYE 81 İL & FLIGHTRADAR ROTA SİMÜLASYONU
+                </span>
+                <h2 class="text-sm sm:text-base font-bold text-white" id="mapActiveTitle">
+                  Şehirlere tıklayarak ziyaret durumunu değiştirin veya SAW ⇄ ASR uçuş rotalarını inceleyin
+                </h2>
+              </div>
+              <!-- Renk Lejantı -->
+              <div class="flex flex-wrap items-center gap-3 bg-slate-950/80 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-800 text-[11px]">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span>Merkez (İstanbul)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>Gezdim</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>Geçtim/Aktarma</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span>Hedefim</span>
+              </div>
+            </div>
+
+            <!-- SVG TÜRKİYE HARİTASI KONTEYNERİ -->
+            <div id="svgMapWrapper" class="relative w-full px-2 py-1 select-none">
+              <svg id="turkeySvgMap" viewBox="0 0 1200 560" class="w-full h-auto max-h-[540px] drop-shadow-2xl">
+                <defs>
+                  <!-- Parlama Filtreleri -->
+                  <filter id="glowAmber" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                  <filter id="glowSky" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                <!-- Deniz İsimleri -->
+                <text x="580" y="32" class="fill-sky-900/60 font-mono text-[11px] font-bold tracking-[0.35em]">KARADENİZ (BLACK SEA)</text>
+                <text x="360" y="538" class="fill-sky-900/60 font-mono text-[11px] font-bold tracking-[0.35em]">AKDENİZ (MEDITERRANEAN SEA)</text>
+                <text x="65" y="330" class="fill-sky-900/60 font-mono text-[10px] font-bold tracking-[0.25em]" transform="rotate(-90 65 330)">EGE DENİZİ</text>
+                <text x="205" y="138" class="fill-sky-800/70 font-mono text-[8px] font-bold tracking-[0.15em]">MARMARA</text>
+
+                <!-- 81 İl Poligon Katmanı -->
+                <g id="svgProvincesLayer"></g>
+
+                <!-- Göller Katmanı (Van Gölü & Tuz Gölü) -->
+                <g id="svgLakesLayer"></g>
+
+                <!-- İl Plaka / İsim Etiketleri Katmanı -->
+                <g id="svgLabelsLayer"></g>
+
+                <!-- FlightRadar Rota & Havalimanı Katmanı -->
+                <g id="svgRoutesLayer"></g>
+                <g id="svgAirportsLayer"></g>
+              </svg>
+
+              <!-- Harita Hover Tooltip -->
+              <div id="mapTooltip" class="hidden fixed z-50 pointer-events-none bg-slate-950/95 border border-sky-500/40 rounded-xl px-3.5 py-2.5 shadow-2xl text-xs max-w-xs"></div>
+            </div>
+
+            <!-- LEAFLET COĞRAFİ HARİTA KONTEYNERİ (Varsayılan Gizli) -->
+            <div id="leafletMapWrapper" class="hidden w-full h-[500px] rounded-b-3xl overflow-hidden">
+              <div id="leafletMapContainer" class="w-full h-full"></div>
+            </div>
+
+            <!-- ALT FLIGHTRADAR CANLI TELEMETRİ ÇUBUĞU (HUD) -->
+            <div class="relative z-10 bg-slate-950/90 border-t border-slate-800/90 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span class="text-[11px] font-mono font-bold text-emerald-400 uppercase">FLIGHTRADAR ROTA SİMÜLASYONU</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+                  <button onclick="window.App.focusFlightOnMap('FL-PC2730-20261108')" id="hudBtnOutbound" class="px-2 py-0.5 rounded font-mono font-bold text-amber-400 bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 transition">
+                    Gidiş: PC2730 (SAW→ASR)
+                  </button>
+                  <button onclick="window.App.focusFlightOnMap('FL-VF3181-20261108')" id="hudBtnInbound" class="px-2 py-0.5 rounded font-mono font-bold text-sky-400 bg-sky-500/15 border border-sky-500/30 hover:bg-sky-500/25 transition">
+                    Dönüş: VF3181 (ASR→SAW)
+                  </button>
+                  <button onclick="window.App.focusFlightOnMap('all')" class="px-2 py-0.5 rounded font-mono text-slate-300 hover:bg-slate-800 transition">
+                    Gidiş+Dönüş
+                  </button>
+                </div>
+              </div>
+
+              <!-- Telemetri Değerleri -->
+              <div class="flex flex-wrap items-center gap-4 text-xs font-mono" id="hudTelemetryMetrics">
+                <div><span class="text-slate-500">UÇAK:</span> <span class="text-white font-bold" id="hudAircraft">A321 & A321neo</span></div>
+                <div><span class="text-slate-500">KOLTUK:</span> <span class="text-amber-400 font-bold" id="hudSeat">20A (Cam)</span></div>
+                <div><span class="text-slate-500">MESAFE:</span> <span class="text-emerald-400 font-bold" id="hudDistance">579 km (Tek Yön)</span></div>
+                <div><span class="text-slate-500">İRTİFA:</span> <span class="text-sky-400 font-bold" id="hudAltitude">35,000 ft</span></div>
+                <button onclick="window.App.openBoardingPassModal('FL-PC2730-20261108')" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-sans font-semibold text-xs transition">
+                  🎫 Biletleri Gör
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bölge Filtre Butonları -->
+          <div class="flex flex-wrap items-center gap-2" id="regionFilterBar">
+            <button data-region="all" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40">Tüm Bölgeler (81)</button>
+            <button data-region="Marmara" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Marmara (11)</button>
+            <button data-region="İç Anadolu" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">İç Anadolu (13)</button>
+            <button data-region="Ege" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Ege (8)</button>
+            <button data-region="Akdeniz" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Akdeniz (8)</button>
+            <button data-region="Karadeniz" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Karadeniz (18)</button>
+            <button data-region="Doğu Anadolu" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Doğu Anadolu (14)</button>
+            <button data-region="Güneydoğu Anadolu" class="region-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-400 border border-slate-800 hover:text-white">Güneydoğu Anadolu (9)</button>
+          </div>
+        </div>
+
+        <!-- SAĞ SÜTUN: SEÇİLİ ŞEHİR DETAY PANELİ & SON UÇUŞLAR (4 Kolon) -->
+        <div class="xl:col-span-4 space-y-4">
+          <!-- Seçili İl Detay Kartı -->
+          <div id="selectedCityPanel" class="glass-panel rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
+            <!-- JS ile dinamik doldurulur (Varsayılan: 38 Kayseri veya 34 İstanbul) -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SEKME 2: SEYAHATLERİM, FLIGHTRADAR ROTALARI & BİNİŞ KARTLARI          -->
+    <!-- ==================================================================== -->
+    <section id="tabContent-trips" class="hidden space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white">🛫 Seyahatlerim, FlightRadar Rotalarım & Biniş Kartlarım</h2>
+          <p class="text-sm text-slate-400">Gidiş-dönüş uçuşların, koltuk ve kapı bilgilerin, orijinal bilet fotoğrafların ve Türkiye haritası üzerindeki rotaların.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.App.switchTab('map'); window.App.focusFlightOnMap('all');" class="px-4 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs sm:text-sm font-bold transition">
+            🗺️ Tüm Rotaları Türkiye Haritasında Göster
+          </button>
+        </div>
+      </div>
+
+      <!-- DİJİTAL BİNİŞ KARTLARI (PEGASUS PC2730 & AJET VF3181) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="boardingPassesGrid">
+        <!-- JS ile Pegasus ve AJet biniş kartları buraya çizilir -->
+      </div>
+
+      <!-- SEYAHAT GEÇMİŞİ LİSTESİ -->
+      <div class="glass-panel rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white">🧭 Kayıtlı Seyahat Günlüğüm</h3>
+          <span class="text-xs text-slate-400">Bir seyahate tıklayarak Türkiye haritasında gidiş-dönüş rotasını canlandırabilirsiniz</span>
+        </div>
+        <div id="tripsListContainer" class="space-y-4"></div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SEKME 3: UÇAK HANGARIM (BİNDİĞİM UÇAKLAR & HAVACILIK ANSİKLOPEDİSİ)  -->
+    <!-- ==================================================================== -->
+    <section id="tabContent-aircraft" class="hidden space-y-6">
+      <!-- Üst Başlık ve Tescil (Tail Number) Sorgulama -->
+      <div class="glass-panel rounded-3xl p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold">
+            <span>✈️ Melih'in Uçak Hangarı</span>
+            <span>•</span>
+            <span>Bindiğim Modeller: Airbus A321 & Airbus A321neo</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1">Bindiğim Uçaklar & Teknik Havacılık Ansiklopedisi</h2>
+          <p class="text-sm text-slate-400">
+            Bindiğin uçakların fotoğraflı bilgi kartları, motor/menzil/hız verileri ve <strong>20A</strong> koltuğunun kabin içi yerleşim şeması.
+          </p>
+        </div>
+
+        <!-- Canlı Kuyruk Tescili (Tail Number) Sorgulama Kutusu -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 min-w-[300px] sm:min-w-[360px]">
+          <label class="block text-[11px] font-mono uppercase tracking-wider text-sky-400 mb-1.5">
+            🔎 Kuyruk Tescili (Tail Number) Sorgula (Planespotters + Veritabanı)
+          </label>
+          <div class="flex gap-2">
+            <input id="tailLookupInput" type="text" value="TC-LAJ" placeholder="Örn: TC-LAJ, TC-RBA, TC-JRO"
+              class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-white uppercase flex-1 focus:outline-none focus:border-sky-500" />
+            <button onclick="window.App.lookupTailNumber()" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold transition">
+              Sorgula
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mt-2 text-[11px]">
+            <span class="text-slate-500">Hızlı Dene:</span>
+            <button onclick="window.App.quickTail('TC-RBC')" class="text-amber-400 hover:underline font-mono">TC-RBC (Pegasus A321)</button>
+            <span class="text-slate-600">•</span>
+            <button onclick="window.App.quickTail('TC-LAJ')" class="text-sky-400 hover:underline font-mono">TC-LAJ (AJet A321neo)</button>
+            <span class="text-slate-600">•</span>
+            <button onclick="window.App.quickTail('TC-JJN')" class="text-emerald-400 hover:underline font-mono">TC-JJN (THY B777)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kuyruk Tescili Sonuç Kutusu (Varsayılan Gizli) -->
+      <div id="tailLookupResultBox" class="hidden glass-panel rounded-3xl p-5 border border-sky-500/40"></div>
+
+      <!-- Filtre Butonları -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button data-acfilter="all" class="ac-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-sky-500 text-white">
+          Tüm Uçak Ansiklopedisi (9 Model)
+        </button>
+        <button data-acfilter="flown" class="ac-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-amber-400 border border-amber-500/40 hover:bg-amber-500/10">
+          ⭐ Sadece Bindiğim Uçaklar (Airbus A321 & A321neo)
+        </button>
+        <button data-acfilter="Airbus" class="ac-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:text-white">
+          Airbus Ailesi
+        </button>
+        <button data-acfilter="Boeing" class="ac-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:text-white">
+          Boeing Ailesi
+        </button>
+      </div>
+
+      <!-- UÇAK KARTLARI GRİDİ -->
+      <div id="aircraftCatalogGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SEKME 4: MELİH'İN PROFİLİ, BÖLGESEL İSTATİSTİKLER & YEDEKLEME        -->
+    <!-- ==================================================================== -->
+    <section id="tabContent-profile" class="hidden space-y-6">
+      <div id="profileDashboardContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 1: DİJİTAL BİNİŞ KARTI & ORİJİNAL BİLET FOTOĞRAFI MODALI         -->
+  <!-- ====================================================================== -->
+  <div id="ticketModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel rounded-3xl max-w-4xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8" id="ticketModalContent">
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 2: UÇAK KABİN & 20A KOLTUK ŞEMASI MODALI                         -->
+  <!-- ====================================================================== -->
+  <div id="seatMapModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel rounded-3xl max-w-3xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8" id="seatMapModalContent">
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 3: YENİ SEYAHAT / UÇUŞ EKLEME (OCR + KARAYOLU GÜZERGÂH DESTEKLİ) -->
+  <!-- ====================================================================== -->
+  <div id="addTripModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel rounded-3xl max-w-2xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-white">+ Yeni Seyahat veya Uçuş Ekle</h3>
+          <p class="text-xs text-slate-400">Bilet fotoğrafından otomatik okutabilir veya karayolu güzergâhındaki geçiş illerini otomatik işaretleyebilirsin.</p>
+        </div>
+        <button onclick="window.App.closeModal('addTripModal')" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <!-- YENİ ÖZELLİK 1: AKILLI BİLET FOTOĞRAFI / OCR OKUYUCU KUTUSU -->
+      <div id="smartTicketScannerBox" class="bg-slate-900/95 border border-sky-500/35 rounded-2xl p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🤖</span>
+            <div>
+              <h4 class="text-xs font-extrabold text-sky-400 uppercase tracking-wider">Akıllı Bilet & Biniş Kartı Okuyucu (OCR)</h4>
+              <p class="text-[11px] text-slate-400">Bilet ekran görüntüsü yükle veya bilet metnini yapıştır; uçuş kodu, saat, kapı ve koltuk otomatik dolsun.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold transition inline-flex items-center gap-1.5 shadow">
+              <span>📷 Bilet Görseli Seç</span>
+              <input type="file" accept="image/*" class="hidden" onchange="window.App.handleTicketOcrUpload(event)" />
+            </label>
+            <button type="button" onclick="window.App.runSampleTicketScan()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition">
+              ⚡ Örnek Bilet Oku
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <input id="ocrRawTextInput" type="text" placeholder="Veya bilet/SMS metnini buraya yapıştırın (Örn: TK2014 IST AYT 14:20 15:45 Koltuk 18A Kapı 304 Airbus A321neo)..."
+            class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500" />
+          <button type="button" onclick="window.App.parseManualTicketText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-sky-300">
+            Metni Çözümle
+          </button>
+        </div>
+        <div id="ocrScanStatus" class="hidden text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-3 py-1.5"></div>
+      </div>
+
+      <form id="addFlightForm" class="space-y-4" onsubmit="window.App.handleAddFlightSubmit(event)">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Ulaşım Türü</label>
+            <select id="formTransportType" onchange="window.App.toggleFlightFields()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="plane">✈️ Uçak (FlightRadar + Biniş Kartı)</option>
+              <option value="car">🚗 Özel Araba (Akıllı Karayolu Geçiş İlleri)</option>
+              <option value="bus">🚌 Otobüs (Karayolu Güzergâhı)</option>
+              <option value="train">🚆 Tren / YHT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Tarih</label>
+            <input id="formDate" type="date" value="2026-11-09" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nereden (Kalkış Şehri / Havalimanı)</label>
+            <select id="formFromPlate" onchange="window.App.updateHighwayCorridorPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nereye (Varış Şehri / Havalimanı)</label>
+            <select id="formToPlate" onchange="window.App.updateHighwayCorridorPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+          </div>
+        </div>
+
+        <!-- YENİ ÖZELLİK 2: AKILLI KARAYOLU GÜZERGÂH & GEÇİŞ İLLERİ HESAPLAYICI -->
+        <div id="highwayCorridorBox" class="hidden bg-amber-500/10 border border-amber-500/35 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-amber-300">🛣️ Akıllı Karayolu Güzergâhı & Geçiş İlleri</span>
+            <label class="flex items-center gap-1.5 text-xs text-slate-200 cursor-pointer">
+              <input id="formAutoMarkTransit" type="checkbox" checked class="rounded accent-amber-500" />
+              <span>Geçiş illerini haritada otomatik <b>"🚗 İçinden Geçtim"</b> işaretle</span>
+            </label>
+          </div>
+          <div id="highwayCorridorChips" class="flex flex-wrap items-center gap-1.5 text-xs"></div>
+        </div>
+
+        <!-- Uçak Özel Alanları -->
+        <div id="flightSpecificFields" class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2 border-t border-slate-800">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Havayolu</label>
+            <select id="formAirline" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="Pegasus Airlines">Pegasus Airlines (PC)</option>
+              <option value="AJet">AJet (VF)</option>
+              <option value="Türk Hava Yolları">Türk Hava Yolları (TK)</option>
+              <option value="SunExpress">SunExpress (XQ)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Uçuş No</label>
+            <input id="formFlightNo" type="text" placeholder="Örn: TK2014" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono uppercase" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Uçak Modeli</label>
+            <select id="formAircraftId" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Kalkış Saati</label>
+            <input id="formDepTime" type="time" value="09:30" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Varış Saati</label>
+            <input id="formArrTime" type="time" value="11:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Koltuk No & Kapı</label>
+            <div class="flex gap-1.5">
+              <input id="formSeat" type="text" value="20A" placeholder="Koltuk (20A)" class="w-1/2 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white font-mono uppercase" />
+              <input id="formGate" type="text" placeholder="Kapı (206)" class="w-1/2 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs text-white font-mono" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Seyahat Notu / Anılar</label>
+          <textarea id="formNotes" rows="2" placeholder="Bu seyahatle ilgili notların..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="window.App.closeModal('addTripModal')" class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">İptal</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-white shadow-lg shadow-emerald-500/25">
+            Kaydet ve Haritaya İşle
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- MODAL 4: PAYLAŞILABİLİR UÇUŞ & SEYAHAT PASAPORTU KARTI (PNG ÜRETİCİ)    -->
+  <!-- ====================================================================== -->
+  <div id="passportModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-panel rounded-3xl max-w-3xl w-full p-6 border border-slate-700 shadow-2xl space-y-5 my-8">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <span class="text-xs font-mono uppercase text-amber-400 font-bold">INSTAGRAM / WHATSAPP STORY & ÖZET KARTI</span>
+          <h3 class="text-xl font-extrabold text-white">🛂 Melih'in Paylaşılabilir Seyahat & Havacılık Pasaportu</h3>
+        </div>
+        <button onclick="window.App.closeModal('passportModal')" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white">✕</button>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center gap-6">
+        <div class="flex-1 flex justify-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
+          <canvas id="passportCanvas" width="1080" height="1350" class="w-full max-w-[320px] h-auto rounded-xl shadow-2xl border border-slate-700"></canvas>
+        </div>
+        <div class="w-full md:w-64 space-y-4">
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Bu kartta gezdiğin şehir sayısı (<b>81 İl</b>), <b>SAW ⇄ ASR</b> uçuş rotan, bindiğin uçak modelleri (<b>Airbus A321 & A321neo</b>) ve <b>20A</b> koltuk istatistiğin yüksek çözünürlüklü olarak yer alır.
+          </p>
+          <button onclick="window.App.downloadPassportPng()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs shadow-lg transition flex items-center justify-center gap-2">
+            <span>📥</span>
+            <span>Yüksek Çözünürlüklü PNG İndir</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERİ VE UYGULAMA SCRİPTLERİ -->
+  <script src="js/turkey-provinces.js"></script>
+  <script src="js/aviation-data.js"></script>
+  <script src="js/seed-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

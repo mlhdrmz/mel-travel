@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": "src/MelTravel.Web/wwwroot",
+  "cleanUrls": true
+}

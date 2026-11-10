@@ -1,0 +1,18 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+out/
+.vs/
+.dotnet_home/
+
+# Personal & Local Data (Privacy Protection Rule)
+src/MelTravel.Web/App_Data/*.local.json
+src/MelTravel.Web/wwwroot/assets/tickets/*.png
+src/MelTravel.Web/wwwroot/assets/tickets/*.jpg
+src/MelTravel.Web/wwwroot/assets/tickets/*.jpeg
+*.user
+*.suo
+.DS_Store
+Thumbs.db
