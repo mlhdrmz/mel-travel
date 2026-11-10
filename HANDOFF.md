@@ -20,4 +20,4 @@
    - **Akıllı Karayolu Güzergâh & Geçiş İlleri Hesaplayıcı (`HighwayCorridorEngine`):** Özel araba veya otobüs seçildiğinde kalkış ve varış ili arasındaki geçiş illerini otomatik bulup haritada *"İçinden Geçtim"* olarak işaretleme ve karayolu rotasını çizme.
    - **Paylaşılabilir Seyahat & Havacılık Pasaportu (PNG):** `1080×1350` yüksek çözünürlüklü Story/Özet kartı çizimi ve tek tıkla PNG indirme.
    - **PWA (Mobil/Masaüstü Uygulama Kurulumu):** `manifest.json`, çevrimdışı çalışan `sw.js` (Service Worker), `icon.svg` ve üst menüde `📲 Uygulamayı Kur` butonu.
-   - **Git & Vercel Hazırlığı:** Yerel Git deposu başlatıldı ve ilk commit alındı; Vercel `team_mqdL2ekK29WQFnpV1I6oYIcm` yetkilendirme onayı bekleniyor.
+   - **Git & Vercel Hazırlığı:** Yerel Git deposu (`main` dalı) ve `vercel.json` GitHub -> Vercel otomatik dağıtımı için yapılandırıldı; GitHub uzak depo (`origin`) bağlantısı bekleniyor.
