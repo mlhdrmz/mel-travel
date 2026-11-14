@@ -2,7 +2,9 @@
 
 ## Son Durum (14.11.2026) — "Dergi" tasarımı, `dergi-tasarim` dalında (henüz yayında DEĞİL)
 - **Geliştirici / Asistan:** Claude
-- **Dal:** `dergi-tasarim` (`main`'den açıldı). `main` ve canlı site (`https://rotam-turkiye.vercel.app`) **değişmedi**; Melih önizlemeyi onaylamadan `main`'e birleştirilmeyecek.
+- **Dal:** `dergi-tasarim` (`main`'den açıldı). `main` **değişmedi**; Melih önizlemeyi onaylamadan `main`'e birleştirilmeyecek.
+- **Vercel durumu (14.11.2026'da görüldü):** Vercel etkinlik kaydına göre `rotam-turkiye` ve `mel-travel` projeleri 10.11.2026 20:54'te (TSİ) Melih'in hesabından silinmiş. Şu an bu depoya bağlı bir Vercel projesi yok; bu yüzden aşağıda yazan canlı adres (`https://rotam-turkiye.vercel.app`) büyük olasılıkla yayında değil (adres doğrudan açılıp denenmedi) ve `dergi-tasarim` dalı için otomatik önizleme oluşmadı. Projenin yeniden kurulması Melih'in onayını bekliyor; onaysız proje açılmadı.
+- **Geçici önizleme:** Yeni tasarım, Melih'in görebilmesi için claude.ai üzerinde özel (yalnızca ona açık) bir sayfa olarak yayımlandı. O sayfada dış fotoğraflar, Leaflet haritası ve dosya indirme çalışmaz; gerçek adreste çalışır.
 - **Kapsam kuralı:** İçerik ve işlevler aynı kaldı; yalnızca görünüm değişti ve 8 Kasım uçuş kayıtları düzeltildi. `window.App` dışa açık fonksiyonları, tüm `id` / `data-*` değerleri ve `localStorage` anahtarı (`mel_travel_state_v2`, `version: 2`) aynıdır.
 
 ### Bu dalda yapılanlar
@@ -36,9 +38,10 @@
 - Telefonda harita ekran genişliğine sığdığı için küçük kalır.
 
 ### Sıradaki adımlar
-1. Melih önizlemeye bakıp geri bildirim verecek; onaylarsa `dergi-tasarim` → `main` (canlıya çıkar).
-2. Ayrı adım: bulut kaydı (Supabase). Hesabı Melih açacak; şu an veri yalnızca tarayıcıda (`localStorage`).
-3. Sonraki fikirler: şehir başına kapak fotoğrafı, Melih'in kendi fotoğrafları, uçak tescil fotoğrafı.
+1. Melih önizlemeye bakıp geri bildirim verecek.
+2. Yayın: Vercel projesi silindiği için önce Melih'e sorulacak — proje yeniden kurulsun mu, hangi adla? Kurulursa depo (`mlhdrmz/mel-travel`) bağlanır; ayarlar `vercel.json` içinde hazır (çıktı klasörü `src/MelTravel.Web/wwwroot`, derleme yok). `main` canlıya, diğer dallar önizlemeye gider. Onaydan sonra `dergi-tasarim` → `main`.
+3. Ayrı adım: bulut kaydı (Supabase). Hesabı Melih açacak; şu an veri yalnızca tarayıcıda (`localStorage`).
+4. Sonraki fikirler: şehir başına kapak fotoğrafı, Melih'in kendi fotoğrafları, uçak tescil fotoğrafı.
 
 ---
 
@@ -64,5 +67,5 @@
    - **PWA (Mobil/Masaüstü Uygulama Kurulumu):** `manifest.json`, çevrimdışı çalışan `sw.js` (Service Worker), `icon.svg` ve üst menüde `📲 Uygulamayı Kur` butonu.
    - **Git & Vercel Canlı Yayın (`READY`):**
      - **GitHub Deposu:** `https://github.com/mlhdrmz/mel-travel` (`main` dalı, Vercel ile otomatik bağlı)
-     - **Canlı Production URL:** `https://rotam-turkiye.vercel.app` (`tilion/rotam-turkiye`, Deployment ID: `dpl_FV6X1tb4fsMHmMCmktpb5GU6UrEk`)
+     - **Canlı Production URL (10.11.2026 itibarıyla; proje aynı akşam silindi, yukarıdaki "Vercel durumu" notuna bakın):** `https://rotam-turkiye.vercel.app` (`tilion/rotam-turkiye`, Deployment ID: `dpl_FV6X1tb4fsMHmMCmktpb5GU6UrEk`)
      - **Vercel CLI & Node.js:** `Node.js v22.14.0` ve `Vercel CLI 65.14.0` (`melihdurmazzz91-8072`) kuruldu ve doğrulandı.
