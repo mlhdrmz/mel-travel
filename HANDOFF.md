@@ -1,15 +1,15 @@
 # HANDOFF.md — Rotam Türkiye (`mel-travel`)
 
-## Son Durum (14.11.2026) — "Dergi" tasarımı, `dergi-tasarim` dalında (henüz yayında DEĞİL)
+## Son Durum (14.11.2026, 23:55) — "Dergi" tasarımı YAYINDA
 - **Geliştirici / Asistan:** Claude
-- **Dal:** `dergi-tasarim` (`main`'den açıldı). `main` **değişmedi**; Melih önizlemeyi onaylamadan `main`'e birleştirilmeyecek.
-- **Vercel durumu (14.11.2026):** `rotam-turkiye` ve `mel-travel` projeleri 10.11.2026 20:54'te (TSİ) Melih'in hesabından silinmişti (Vercel etkinlik kaydı). Melih'in onayıyla 14.11.2026'da `rotam-turkiye` projesi yeniden kuruldu (`tilion` ekibi, proje kimliği `prj_O9G0zKnoW9J6vqX8ToJMEvURRHOC`) ve `mlhdrmz/mel-travel` deposuna bağlandı. `mel-travel` adlı ikinci proje yeniden kurulmadı.
-  - **Canlı adres:** `https://rotam-turkiye.vercel.app` → `main` dalı (eski tasarım, v1.2).
-  - **Önizleme adresi:** `https://rotam-turkiye-git-dergi-tasarim-tilion.vercel.app` → `dergi-tasarim` dalı. Önizlemeler Vercel girişi ister; her gönderimde kendiliğinden yenilenir.
-- **Geçici önizleme sayfası (claude.ai):** Vercel önizlemesi kurulmadan önce yayımlanmıştı; artık gerek yok, güncellenmiyor.
+- **Yayın:** Melih yeni tasarımı onayladı; `dergi-tasarim` dalı `main`'e birleştirildi (fast-forward, `d05d80b`) ve `https://rotam-turkiye.vercel.app` adresinde yayında. Canlı adres tarayıcıda açılıp kontrol edildi (kapak, 81 il, yazı tipleri, düzeltilmiş uçuş kayıtları).
+- **Vercel:** `rotam-turkiye` projesi (`tilion` ekibi, `prj_O9G0zKnoW9J6vqX8ToJMEvURRHOC`), `mlhdrmz/mel-travel` deposuna bağlı. `main` → canlı adres. Eski projeler (`rotam-turkiye`, `mel-travel`) 10.11.2026'da silinmişti; bugün yalnızca `rotam-turkiye` yeniden kuruldu.
+- **Deneme adresi kapatıldı:** `rotam-turkiye-git-dergi-tasarim-tilion.vercel.app` artık yalnızca "bu adres kapatıldı" sayfasını gösteriyor (eski çevrimdışı önbelleği temizleyip ana adrese yönlendiriyor). Vercel girişi olmayan biri bu adreste Vercel giriş ekranını görür. Girişsiz paylaşım bağlantısı iptal edildi.
+- **Açık kalanlar:** GitHub'daki `dergi-tasarim` dalı silinemedi (bu oturumun GitHub erişimi dal silmeye izin vermiyor); dal tamamen `main`'e birleşti, Melih GitHub'dan silebilir. claude.ai'deki geçici önizleme sayfası duruyor (güncellenmiyor).
+- **Tarayıcı notu:** Siteyi daha önce açmış tarayıcılarda eski çevrimdışı önbellek ilk açılışta eski tasarımı gösterebilir; sayfa bir kez yenilenince yeni tasarım gelir. Tarayıcıda kayıtlı eski uçuş bilgileri `applySeedCorrections()` ile kendiliğinden düzelir.
 - **Kapsam kuralı:** İçerik ve işlevler aynı kaldı; yalnızca görünüm değişti ve 8 Kasım uçuş kayıtları düzeltildi. `window.App` dışa açık fonksiyonları, tüm `id` / `data-*` değerleri ve `localStorage` anahtarı (`mel_travel_state_v2`, `version: 2`) aynıdır.
 
-### Bu dalda yapılanlar
+### Bu sürümde yapılanlar
 1. **Görünüm: "Dergi B2" (kapak fotoğraflı)**
    - Tailwind CDN kaldırıldı. Bütün stil `wwwroot/css/styles.css` içinde, CSS değişkenleriyle: zemin `#D3DAE0`, kâğıt `#EEF1F4`, mürekkep `#121B25`, kobalt `#1A45C4` (Gezdim), açık kobalt `#9DB2E6` (Geçtim), kehribar `#E8A20C` (Merkez). Yazı tipleri Newsreader (başlık) + Inter (metin).
    - `index.html` ve `app.js` içindeki HTML şablonları bu sınıflara göre yeniden yazıldı; arayüzdeki emojiler kaldırıldı, metinler korundu.
@@ -42,8 +42,8 @@
 - Telefonda harita ekran genişliğine sığdığı için küçük kalır.
 
 ### Sıradaki adımlar
-1. Melih önizlemeye bakıp geri bildirim verecek.
-2. Yayın: Melih yeni tasarımı onaylayınca `dergi-tasarim` → `main` (canlı adrese çıkar). Ayarlar `vercel.json` içinde (çıktı klasörü `src/MelTravel.Web/wwwroot`, derleme yok).
+1. Melih canlı sitede geri bildirim verecek. Yeni değişiklikler artık doğrudan `main` yerine yine ayrı bir dalda hazırlanıp onaydan sonra birleştirilmeli.
+2. Ayarlar `vercel.json` içinde (çıktı klasörü `src/MelTravel.Web/wwwroot`, derleme yok); `main`'e her gönderim canlıya çıkar.
 3. Ayrı adım: bulut kaydı (Supabase). Hesabı Melih açacak; şu an veri yalnızca tarayıcıda (`localStorage`).
 4. Sonraki fikirler: şehir başına kapak fotoğrafı, Melih'in kendi fotoğrafları, uçak tescil fotoğrafı.
 
