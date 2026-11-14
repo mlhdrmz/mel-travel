@@ -1,7 +1,7 @@
 // ============================================================================
 // MelTravel (Rotam Türkiye) - PWA Service Worker (Çevrimdışı Önbellek Desteği)
 // ============================================================================
-const CACHE_NAME = "rotam-turkiye-pwa-v1.3";
+const CACHE_NAME = "rotam-turkiye-pwa-v1.3.1";
 const ASSETS_TO_CACHE = [
 "./",
 "./index.html",

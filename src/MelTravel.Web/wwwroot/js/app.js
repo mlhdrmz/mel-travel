@@ -764,8 +764,10 @@ window.App = (function () {
     if (typeof L === "undefined") return;
     if (!leafletMap) {
       leafletMap = L.map("leafletMapContainer").setView([39.2, 35.2], 6);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap & CartoDB",
+      // CARTO karoları (eski sürümdeki dark_all dahil) artık anahtar istiyor ve "API KEY REQUIRED"
+      // filigranı basıyor; bu yüzden OpenStreetMap'in kendi karoları kullanılıyor.
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları',
         maxZoom: 18
       }).addTo(leafletMap);
       leafletLayerGroup = L.layerGroup().addTo(leafletMap);

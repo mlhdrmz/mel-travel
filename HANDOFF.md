@@ -3,8 +3,10 @@
 ## Son Durum (14.11.2026) — "Dergi" tasarımı, `dergi-tasarim` dalında (henüz yayında DEĞİL)
 - **Geliştirici / Asistan:** Claude
 - **Dal:** `dergi-tasarim` (`main`'den açıldı). `main` **değişmedi**; Melih önizlemeyi onaylamadan `main`'e birleştirilmeyecek.
-- **Vercel durumu (14.11.2026'da görüldü):** Vercel etkinlik kaydına göre `rotam-turkiye` ve `mel-travel` projeleri 10.11.2026 20:54'te (TSİ) Melih'in hesabından silinmiş. Şu an bu depoya bağlı bir Vercel projesi yok; bu yüzden aşağıda yazan canlı adres (`https://rotam-turkiye.vercel.app`) büyük olasılıkla yayında değil (adres doğrudan açılıp denenmedi) ve `dergi-tasarim` dalı için otomatik önizleme oluşmadı. Projenin yeniden kurulması Melih'in onayını bekliyor; onaysız proje açılmadı.
-- **Geçici önizleme:** Yeni tasarım, Melih'in görebilmesi için claude.ai üzerinde özel (yalnızca ona açık) bir sayfa olarak yayımlandı. O sayfada dış fotoğraflar, Leaflet haritası ve dosya indirme çalışmaz; gerçek adreste çalışır.
+- **Vercel durumu (14.11.2026):** `rotam-turkiye` ve `mel-travel` projeleri 10.11.2026 20:54'te (TSİ) Melih'in hesabından silinmişti (Vercel etkinlik kaydı). Melih'in onayıyla 14.11.2026'da `rotam-turkiye` projesi yeniden kuruldu (`tilion` ekibi, proje kimliği `prj_O9G0zKnoW9J6vqX8ToJMEvURRHOC`) ve `mlhdrmz/mel-travel` deposuna bağlandı. `mel-travel` adlı ikinci proje yeniden kurulmadı.
+  - **Canlı adres:** `https://rotam-turkiye.vercel.app` → `main` dalı (eski tasarım, v1.2).
+  - **Önizleme adresi:** `https://rotam-turkiye-git-dergi-tasarim-tilion.vercel.app` → `dergi-tasarim` dalı. Önizlemeler Vercel girişi ister; her gönderimde kendiliğinden yenilenir.
+- **Geçici önizleme sayfası (claude.ai):** Vercel önizlemesi kurulmadan önce yayımlanmıştı; artık gerek yok, güncellenmiyor.
 - **Kapsam kuralı:** İçerik ve işlevler aynı kaldı; yalnızca görünüm değişti ve 8 Kasım uçuş kayıtları düzeltildi. `window.App` dışa açık fonksiyonları, tüm `id` / `data-*` değerleri ve `localStorage` anahtarı (`mel_travel_state_v2`, `version: 2`) aynıdır.
 
 ### Bu dalda yapılanlar
@@ -12,7 +14,8 @@
    - Tailwind CDN kaldırıldı. Bütün stil `wwwroot/css/styles.css` içinde, CSS değişkenleriyle: zemin `#D3DAE0`, kâğıt `#EEF1F4`, mürekkep `#121B25`, kobalt `#1A45C4` (Gezdim), açık kobalt `#9DB2E6` (Geçtim), kehribar `#E8A20C` (Merkez). Yazı tipleri Newsreader (başlık) + Inter (metin).
    - `index.html` ve `app.js` içindeki HTML şablonları bu sınıflara göre yeniden yazıldı; arayüzdeki emojiler kaldırıldı, metinler korundu.
    - **Kapak:** Türkiye Haritası sekmesinin üstünde fotoğraf + "81 ilden N'si gezildi." başlığı. Fotoğraf `wwwroot/img/kapak-kayseri.jpg` (Ömer Haktan Bulut / Unsplash; Melih'in seçtiği kare). Kural: son gidilen şehre Melih'in kendi yüklediği fotoğraf varsa o, yoksa hazır kapak fotoğrafı gösterilir; şimdilik yalnızca Kayseri (38) için dosya var, başka şehir için aynı kare kullanılır (`app.js` → `renderCover`, `COVER_PHOTOS`).
-   - **FlightRadar Modu** bilerek koyu kaldı (radar ekranı). Leaflet katmanı açık renkli karolara (`light_all`) çevrildi.
+   - **FlightRadar Modu** bilerek koyu kaldı (radar ekranı).
+   - **Coğrafi Harita (Leaflet):** CARTO karoları (eski sürümdeki `dark_all` dahil) artık anahtar istiyor ve "API KEY REQUIRED" filigranı basıyor. Bu dalda OpenStreetMap'in kendi karolarına (`tile.openstreetmap.org`) geçildi. `main`'deki eski sürümde bu mod hâlâ bozuk.
    - **Pasaport PNG** (1080×1350) aynı içerikle Dergi paletinde çiziliyor.
    - `manifest.json` / `theme-color` `#D3DAE0`; `icon.svg` düz mürekkep zemin.
 2. **Harita: gerçek il sınırları**
@@ -28,10 +31,11 @@
 
 ### Doğrulama
 - Yerelde statik sunucu + başsız Chrome ile denendi (1440 px ve 390 px): 4 sekme, 3 harita modu, il seçme/durum değiştirme (yenilemede kalıcı), il arama, bölge filtresi, araba ve uçak yolculuğu ekleme, bilet/koltuk/pasaport pencereleri, eski kayıtlı veriden geçiş. Sayfa hatası yok; yatay taşma yok.
-- **Çalıştırılamayanlar:** .NET derlemesi ve 25 test (bu ortamda `dotnet` yok) — `TravelDomain.cs` ve `tests/MelTravel.Tests/Program.cs` değişti, bir sonraki oturumda `dotnet run --project tests/MelTravel.Tests` ile doğrulanmalı. Yerel denemede dış kaynaklar (Google Fonts, Leaflet, Unsplash fotoğrafları, Planespotters) kapalıydı; bunlar önizleme adresinde kontrol edilmeli.
+- Önizleme adresi tarayıcıda açılıp denendi (14.11.2026): yazı tipleri, kapak, 81 il, şehir fotoğrafı ve OpenStreetMap karoları yükleniyor.
+- **Çalıştırılamayanlar:** .NET derlemesi ve 25 test (bu ortamda `dotnet` yok) — `TravelDomain.cs` ve `tests/MelTravel.Tests/Program.cs` değişti, bir sonraki oturumda `dotnet run --project tests/MelTravel.Tests` ile doğrulanmalı.
 
 ### Bilinen eksikler / doğrulanmamış eski içerik (bu dalda dokunulmadı)
-- İl kartı ve uçak kartı fotoğrafları eskisi gibi Unsplash bağlantılarıdır; her fotoğrafın gerçekten o şehri/uçağı gösterdiği kontrol edilmedi.
+- İl kartı ve uçak kartı fotoğrafları eskisi gibi Unsplash bağlantılarıdır. 81 il için yalnızca 20 farklı fotoğraf bağlantısı var (çoğu il başka bir ille aynı fotoğrafı paylaşıyor); fotoğrafların o şehri/uçağı gösterdiği kontrol edilmedi. Boeing 777-300ER (`B77W`) kartının fotoğraf bağlantısı kırık (404).
 - Kuyruk veritabanındaki eski satırların MSN / teslim yılı bilgileri doğrulanmadı. TC-RDM ve TC-LTV satırlarında yalnızca doğrulanan alanlar var.
 - "Akıllı Bilet Okuyucu" gerçek OCR değildir; metni ve dosya adını ayrıştırır.
 - Üst şeritteki "Uçuş (SAW ⇄ ASR)" ve "PC2730 (Gidiş) & VF3181 (Dönüş)" yazıları sabittir; yeni uçuş eklenince değişmez (eski davranış).
@@ -39,7 +43,7 @@
 
 ### Sıradaki adımlar
 1. Melih önizlemeye bakıp geri bildirim verecek.
-2. Yayın: Vercel projesi silindiği için önce Melih'e sorulacak — proje yeniden kurulsun mu, hangi adla? Kurulursa depo (`mlhdrmz/mel-travel`) bağlanır; ayarlar `vercel.json` içinde hazır (çıktı klasörü `src/MelTravel.Web/wwwroot`, derleme yok). `main` canlıya, diğer dallar önizlemeye gider. Onaydan sonra `dergi-tasarim` → `main`.
+2. Yayın: Melih yeni tasarımı onaylayınca `dergi-tasarim` → `main` (canlı adrese çıkar). Ayarlar `vercel.json` içinde (çıktı klasörü `src/MelTravel.Web/wwwroot`, derleme yok).
 3. Ayrı adım: bulut kaydı (Supabase). Hesabı Melih açacak; şu an veri yalnızca tarayıcıda (`localStorage`).
 4. Sonraki fikirler: şehir başına kapak fotoğrafı, Melih'in kendi fotoğrafları, uçak tescil fotoğrafı.
 
