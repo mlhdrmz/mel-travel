@@ -1,6 +1,48 @@
 # HANDOFF.md — Rotam Türkiye (`mel-travel`)
 
-## Son Durum (10.11.2026)
+## Son Durum (14.11.2026) — "Dergi" tasarımı, `dergi-tasarim` dalında (henüz yayında DEĞİL)
+- **Geliştirici / Asistan:** Claude
+- **Dal:** `dergi-tasarim` (`main`'den açıldı). `main` ve canlı site (`https://rotam-turkiye.vercel.app`) **değişmedi**; Melih önizlemeyi onaylamadan `main`'e birleştirilmeyecek.
+- **Kapsam kuralı:** İçerik ve işlevler aynı kaldı; yalnızca görünüm değişti ve 8 Kasım uçuş kayıtları düzeltildi. `window.App` dışa açık fonksiyonları, tüm `id` / `data-*` değerleri ve `localStorage` anahtarı (`mel_travel_state_v2`, `version: 2`) aynıdır.
+
+### Bu dalda yapılanlar
+1. **Görünüm: "Dergi B2" (kapak fotoğraflı)**
+   - Tailwind CDN kaldırıldı. Bütün stil `wwwroot/css/styles.css` içinde, CSS değişkenleriyle: zemin `#D3DAE0`, kâğıt `#EEF1F4`, mürekkep `#121B25`, kobalt `#1A45C4` (Gezdim), açık kobalt `#9DB2E6` (Geçtim), kehribar `#E8A20C` (Merkez). Yazı tipleri Newsreader (başlık) + Inter (metin).
+   - `index.html` ve `app.js` içindeki HTML şablonları bu sınıflara göre yeniden yazıldı; arayüzdeki emojiler kaldırıldı, metinler korundu.
+   - **Kapak:** Türkiye Haritası sekmesinin üstünde fotoğraf + "81 ilden N'si gezildi." başlığı. Fotoğraf `wwwroot/img/kapak-kayseri.jpg` (Ömer Haktan Bulut / Unsplash; Melih'in seçtiği kare). Kural: son gidilen şehre Melih'in kendi yüklediği fotoğraf varsa o, yoksa hazır kapak fotoğrafı gösterilir; şimdilik yalnızca Kayseri (38) için dosya var, başka şehir için aynı kare kullanılır (`app.js` → `renderCover`, `COVER_PHOTOS`).
+   - **FlightRadar Modu** bilerek koyu kaldı (radar ekranı). Leaflet katmanı açık renkli karolara (`light_all`) çevrildi.
+   - **Pasaport PNG** (1080×1350) aynı içerikle Dergi paletinde çiziliyor.
+   - `manifest.json` / `theme-color` `#D3DAE0`; `icon.svg` düz mürekkep zemin.
+2. **Harita: gerçek il sınırları**
+   - Yeni dosya `wwwroot/js/turkey-geo.js` (`window.TURKEY_GEO_PATHS`, 81 plaka). Kaynak: `cihadturhan/tr-geojson`; veri © OpenStreetMap katkıcıları, ODbL — sayfa altında atıf var, kaldırılmamalı.
+   - Sınırlar sitenin kendi `TurkeyMapEngine.project()` projeksiyonuna çevrildi. `turkey-provinces.js` → `buildProvincePaths()` bu veri yüklüyse onu kullanır, yoksa eski Voronoi yaklaşımına düşer.
+3. **Uçuş kayıtları düzeltildi (kaynak: Flightradar24 uçuş geçmişi, 13.11.2026'da bakıldı)**
+   - **PC2730** (08.11.2026, SAW → ASR): uçak **TC-RDM, Airbus A321-251NX (A321neo, CFM LEAP-1A)**. Tarifeli 05:30–06:45; gerçekleşen kalkış 05:40, iniş 06:37; havada 57 dk. (Eski kayıt: "Airbus A321", TC-RBC, 75 dk — yanlıştı.)
+   - **VF3181** (08.11.2026, ASR → SAW): uçak **TC-LTV, Airbus A321-271NX (A321neo, PW1100G)**. Tarifeli 21:25–23:00; gerçekleşen kalkış 21:33, iniş 22:40; havada 67 dk. (Eski kayıt: TC-LAJ, 95 dk — yanlıştı.)
+   - Seyahat toplamı: 1.158 km, havada 2 sa 4 dk (124 dk). `durationMinutes` artık havada geçen süredir; tarifeli saatler bilette yazdığı gibi korunur, gerçekleşenler `actualDepartureTime` / `actualArrivalTime` alanlarındadır.
+   - `seed-data.js`, `aviation-data.js` (kuyruk veritabanına TC-RDM ve TC-LTV eklendi, TC-RBC'nin tipi A321neo yapıldı), `TravelDomain.cs` ve test beklentisi (`AircraftId == "A321NEO"`) güncellendi.
+   - **Kayıtlı veri geçişi:** Tarayıcıda eski varsayılanlar kayıtlıysa `app.js` → `applySeedCorrections()` yalnızca hâlâ eski varsayılana eşit olan alanları düzeltir (`window.LEGACY_SEED_VALUES`); kullanıcının kendi değiştirdiği alanlara dokunmaz.
+4. **PWA:** `sw.js` önbellek adı `rotam-turkiye-pwa-v1.3`; listeye `js/turkey-geo.js` ve `img/kapak-kayseri.jpg` eklendi. Dosya eklendikçe bu liste ve sürüm adı güncellenmeli (önbellek cache-first).
+
+### Doğrulama
+- Yerelde statik sunucu + başsız Chrome ile denendi (1440 px ve 390 px): 4 sekme, 3 harita modu, il seçme/durum değiştirme (yenilemede kalıcı), il arama, bölge filtresi, araba ve uçak yolculuğu ekleme, bilet/koltuk/pasaport pencereleri, eski kayıtlı veriden geçiş. Sayfa hatası yok; yatay taşma yok.
+- **Çalıştırılamayanlar:** .NET derlemesi ve 25 test (bu ortamda `dotnet` yok) — `TravelDomain.cs` ve `tests/MelTravel.Tests/Program.cs` değişti, bir sonraki oturumda `dotnet run --project tests/MelTravel.Tests` ile doğrulanmalı. Yerel denemede dış kaynaklar (Google Fonts, Leaflet, Unsplash fotoğrafları, Planespotters) kapalıydı; bunlar önizleme adresinde kontrol edilmeli.
+
+### Bilinen eksikler / doğrulanmamış eski içerik (bu dalda dokunulmadı)
+- İl kartı ve uçak kartı fotoğrafları eskisi gibi Unsplash bağlantılarıdır; her fotoğrafın gerçekten o şehri/uçağı gösterdiği kontrol edilmedi.
+- Kuyruk veritabanındaki eski satırların MSN / teslim yılı bilgileri doğrulanmadı. TC-RDM ve TC-LTV satırlarında yalnızca doğrulanan alanlar var.
+- "Akıllı Bilet Okuyucu" gerçek OCR değildir; metni ve dosya adını ayrıştırır.
+- Üst şeritteki "Uçuş (SAW ⇄ ASR)" ve "PC2730 (Gidiş) & VF3181 (Dönüş)" yazıları sabittir; yeni uçuş eklenince değişmez (eski davranış).
+- Telefonda harita ekran genişliğine sığdığı için küçük kalır.
+
+### Sıradaki adımlar
+1. Melih önizlemeye bakıp geri bildirim verecek; onaylarsa `dergi-tasarim` → `main` (canlıya çıkar).
+2. Ayrı adım: bulut kaydı (Supabase). Hesabı Melih açacak; şu an veri yalnızca tarayıcıda (`localStorage`).
+3. Sonraki fikirler: şehir başına kapak fotoğrafı, Melih'in kendi fotoğrafları, uçak tescil fotoğrafı.
+
+---
+
+## Önceki Durum (10.11.2026)
 - **Geliştirici / Asistan:** Antigravity
 - **Proje Dizini:** `C:\Users\Melih Durmaz\.gemini\antigravity\scratch\mel-travel`
 - **Durum:** v1.2 tamamlandı (PWA `manifest.json`, `sw.js`, `icon.svg`, Git deposu kurulumu, Akıllı Bilet OCR Okuyucu, Karayolu Güzergâh & Geçiş İlleri Motoru, Paylaşılabilir Pasaport PNG Kartı ve `vercel.json`). Derleme ve 25 otomatik testin tamamı geçti (`25 Başarılı, 0 Başarısız`).
@@ -10,7 +52,7 @@
    - 81 ilin tamamı için plaka, bölge, koordinat, havalimanı kodu, gezilecek yerler ve meşhur lezzetler veri seti.
    - Kıyı ve sınır kırpmalı (Sutherland-Hodgman) su geçirmez 81 il SVG haritası + FlightRadar Koyu Radar Modu + Leaflet Coğrafi Harita geçişi.
 2. **Melih Profili & Başlangıç Uçuşları (`seed-data.js`, `TravelDomain.cs`):**
-   - **Gidiş Uçuşu (`PC2730`):** 08.11.2026 • Pegasus Airlines • `SAW (05:30) → ASR (06:45)` • `Airbus A321` • Koltuk `20A` • 15 Kg + Kabin bagajı.
+   - **Gidiş Uçuşu (`PC2730`):** 08.11.2026 • Pegasus Airlines • `SAW (05:30) → ASR (06:45)` • `Airbus A321neo` (14.11.2026'da düzeltildi; ilk kayıtta `Airbus A321` yazıyordu) • Koltuk `20A` • 15 Kg + Kabin bagajı.
    - **Dönüş Uçuşu (`VF3181`):** 08.11.2026 • AJet • `ASR (21:25) → SAW (23:00)` • `Airbus A321neo` • Koltuk `20A` • Kapı `206` • Biniş `20:40` • Bölge `C` • Seq `9`.
    - Gizlilik kuralı gereği PNR ve bilet numaraları kaynak kodda maskelenmiştir (`****P9`, `****Y4`), yerel bilet görselleri `.gitignore` kapsamına alınmıştır.
 3. **Uçak Hangarım & Ansiklopedi (`aviation-data.js`):**

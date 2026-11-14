@@ -446,8 +446,8 @@ public static class TravelCatalog
                 ToIata: "ASR",
                 DepartureTime: "05:30",
                 ArrivalTime: "06:45",
-                AircraftId: "A321",
-                AircraftName: "Airbus A321",
+                AircraftId: "A321NEO",
+                AircraftName: "Airbus A321neo",
                 Seat: "20A",
                 SeatType: "Cam Kenarı (Sol)",
                 Terminal: "Ana Terminal",
@@ -459,7 +459,7 @@ public static class TravelCatalog
                 MaskedPnr: "****P9",
                 Status: "F (Uçuldu)",
                 DistanceKm: sawAsrDistance,
-                DurationMinutes: 75,
+                DurationMinutes: 57,
                 DirectionLabel: "Gidiş (SAW → ASR)",
                 TicketImageUrl: "assets/tickets/pegasus-pc2730.png",
                 Notes: "Sabah erken uçuşu ile İstanbul Sabiha Gökçen'den Kayseri Erkilet Havalimanı'na gidiş. Koltuk 20A cam kenarı."
@@ -487,7 +487,7 @@ public static class TravelCatalog
                 MaskedPnr: "****Y4",
                 Status: "Uçuldu",
                 DistanceKm: sawAsrDistance,
-                DurationMinutes: 95,
+                DurationMinutes: 67,
                 DirectionLabel: "Dönüş (ASR → SAW)",
                 TicketImageUrl: "assets/tickets/ajet-vf3181.jpg",
                 Notes: "AJet Airbus A321neo ile Kayseri'den İstanbul Sabiha Gökçen'e akşam dönüş uçuşu. Kapı 206, Bölge C, Seq No 9, Koltuk 20A."
@@ -506,12 +506,12 @@ public static class TravelCatalog
                 EndDate: "2026-11-08",
                 IsRoundTrip: true,
                 FlightIds: new List<string> { "FL-PC2730-20261108", "FL-VF3181-20261108" },
-                Summary: "Sabah 05:30 Pegasus PC2730 (Airbus A321) ile İstanbul SAW'dan Kayseri ASR'ye gidiş, akşam 21:25 AJet VF3181 (Airbus A321neo) ile dönüş.",
+                Summary: "Sabah 05:30 Pegasus PC2730 (Airbus A321neo) ile İstanbul SAW'dan Kayseri ASR'ye gidiş, akşam 21:25 AJet VF3181 (Airbus A321neo) ile dönüş.",
                 Highlights: new List<string>
                 {
-                    "Gidiş: Pegasus PC2730 • SAW → ASR • Airbus A321 • Koltuk 20A",
+                    "Gidiş: Pegasus PC2730 • SAW → ASR • Airbus A321neo • Koltuk 20A",
                     "Dönüş: AJet VF3181 • ASR → SAW • Airbus A321neo • Koltuk 20A (Kapı 206)",
-                    "Toplam 1.132 km uçuş mesafesi ve 2 sa 50 dk havada kalış süresi"
+                    "Toplam 1.132 km uçuş mesafesi ve 2 sa 4 dk havada kalış süresi"
                 }
             )
         };

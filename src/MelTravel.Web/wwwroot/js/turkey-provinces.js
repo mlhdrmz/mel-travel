@@ -194,6 +194,19 @@ return "M " + poly.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" L ")
 let cachedPaths = null;
 function buildProvincePaths() {
 if (cachedPaths) return cachedPaths;
+// Gerçek il sınırları (js/turkey-geo.js) yüklüyse onları kullan; yüklü değilse aşağıdaki
+// Voronoi yaklaşımına düşülür. İki veri de aynı project() projeksiyonundadır.
+if (window.TURKEY_GEO_PATHS && Object.keys(window.TURKEY_GEO_PATHS).length >= 81) {
+cachedPaths = {
+provinces: window.TURKEY_GEO_PATHS,
+lakeVan: polyToSvgPath(coordsToProjectedPoly(LAKE_VAN_COORDS)),
+lakeTuz: polyToSvgPath(coordsToProjectedPoly(LAKE_TUZ_COORDS)),
+thraceOutline: polyToSvgPath(coordsToProjectedPoly(THRACE_COORDS)),
+anatoliaOutline: polyToSvgPath(coordsToProjectedPoly(ANATOLIA_COORDS)),
+source: "geo"
+};
+return cachedPaths;
+}
 const thracePoly = coordsToProjectedPoly(THRACE_COORDS);
 const anatoliaPoly = coordsToProjectedPoly(ANATOLIA_COORDS);
 // Trakya'da yer alan iller: 22 Edirne, 39 Kırklareli, 59 Tekirdağ + 34 İstanbul (Avrupa) + 17 Çanakkale (Gelibolu)

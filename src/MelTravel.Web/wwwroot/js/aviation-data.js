@@ -54,7 +54,7 @@ operatorsTr: ["Pegasus Airlines", "Türk Hava Yolları", "Freebird", "Tailwind"]
 badgeColor: "#f59e0b",
 photoUrl: "https://images.unsplash.com/photo-1556388158-158ea5ccacbd?auto=format&fit=crop&w=1000&q=80",
 cockpitNote: "Fly-by-wire yan lövye (sidestick) kontrol sistemi ve çift motorlu yüksek verimli dar gövde mimarisi.",
-description: "Airbus A320 ailesinin uzatılmış gövdeli üyesi olan A321, 44.51 metrelik uzunluğuyla dar gövde sınıfında en yüksek yolcu kapasitesini sunar. Melih'in 08 Kasım 2026 sabahı PC2730 (SAW → ASR) uçuşunda 20A cam kenarı koltuğunda uçtuğu modeldir.",
+description: "Airbus A320 ailesinin uzatılmış gövdeli üyesi olan A321, 44.51 metrelik uzunluğuyla dar gövde sınıfında en yüksek yolcu kapasitesini sunar.",
 highlights: [
 "Tek koridorlu (3-3) kabin düzeninde 220 yolcuya kadar kapasite",
 "Kanat arkası 20A koltuğundan etkileyici kanat ve flap manzarası",
@@ -84,7 +84,7 @@ operatorsTr: ["AJet", "Pegasus Airlines", "Türk Hava Yolları", "SunExpress"],
 badgeColor: "#0ea5e9",
 photoUrl: "https://images.unsplash.com/photo-1540339832862-474599807836?auto=format&fit=crop&w=1000&q=80",
 cockpitNote: "Yeni nesil yüksek bypass oranlı motorlar, 2.4 metrelik kıvrık Sharklet kanat uçları ve Airspace kabin aydınlatması.",
-description: "Airbus'ın 'New Engine Option' (neo) teknolojisiyle donatılan A321neo, önceki nesle göre %20 daha az yakıt tüketimi, %50 daha düşük gürültü ayak izi ve 7.400 km'ye varan menzil sunar. Melih'in 08 Kasım 2026 akşamı AJet VF3181 (ASR → SAW) dönüş uçuşunda 20A koltuğunda deneyimlediği modern uçaktır.",
+description: "Airbus'ın 'New Engine Option' (neo) teknolojisiyle donatılan A321neo, önceki nesle göre %20 daha az yakıt tüketimi, %50 daha düşük gürültü ayak izi ve 7.400 km'ye varan menzil sunar. Melih'in 08 Kasım 2026'daki iki uçuşunda da (sabah Pegasus PC2730 SAW → ASR, akşam AJet VF3181 ASR → SAW) 20A koltuğunda uçtuğu modeldir.",
 highlights: [
 "2.4 metre yüksekliğindeki aerodinamik Sharklet kanat uçları",
 "Devasa fan çapına sahip ultra sessiz LEAP-1A / GTF motorlar",
@@ -298,9 +298,13 @@ highlights: [
 ];
 // Yerleşik Türk Tescil (Tail Number) Veritabanı + Canlı API Desteği
 window.TURKISH_TAIL_REGISTRY = {
+// Melih'in bindiği iki uçak: tip, havayolu ve motor ailesi Flightradar24 uçuş geçmişinden doğrulandı (Kasım 2026).
+// Doğrulanmamış alanlar (MSN, teslim yılı, merkez) bilerek boş bırakıldı.
+"TC-RDM": { reg: "TC-RDM", aircraftId: "A321NEO", type: "Airbus A321-251NX (A321neo)", airline: "Pegasus Airlines", engines: "2x CFM LEAP-1A", note: "Melih'in 08.11.2026 sabahı PC2730 (SAW → ASR) uçuşunu yapan uçak." },
+"TC-LTV": { reg: "TC-LTV", aircraftId: "A321NEO", type: "Airbus A321-271NX (A321neo)", airline: "AJet", engines: "2x PW1100G-JM", note: "Melih'in 08.11.2026 akşamı VF3181 (ASR → SAW) uçuşunu yapan uçak." },
 "TC-RBA": { reg: "TC-RBA", aircraftId: "A321NEO", type: "Airbus A321-251NX (A321neo)", airline: "Pegasus Airlines", delivered: "2019", msn: "8934", engines: "2x CFM LEAP-1A32", base: "SAW (Sabiha Gökçen)", note: "Pegasus filosunun ilk Airbus A321neo uçaklarından." },
 "TC-RBB": { reg: "TC-RBB", aircraftId: "A321NEO", type: "Airbus A321-251NX (A321neo)", airline: "Pegasus Airlines", delivered: "2019", msn: "9042", engines: "2x CFM LEAP-1A32", base: "SAW (Sabiha Gökçen)", note: "Yüksek yoğunluklu 239 koltuklu ACF kabin konfigürasyonu." },
-"TC-RBC": { reg: "TC-RBC", aircraftId: "A321", type: "Airbus A321", airline: "Pegasus Airlines", delivered: "2020", msn: "9115", engines: "2x CFM LEAP-1A32", base: "SAW (Sabiha Gökçen)", note: "İç hat ve Avrupa rotalarında aktif görevde." },
+"TC-RBC": { reg: "TC-RBC", aircraftId: "A321NEO", type: "Airbus A321-251NX (A321neo)", airline: "Pegasus Airlines", delivered: "2020", msn: "9115", engines: "2x CFM LEAP-1A32", base: "SAW (Sabiha Gökçen)", note: "İç hat ve Avrupa rotalarında aktif görevde." },
 "TC-LAJ": { reg: "TC-LAJ", aircraftId: "A321NEO", type: "Airbus A321-271NX (A321neo)", airline: "AJet", delivered: "2023", msn: "11240", engines: "2x PW1133G-JM", base: "SAW / ESB", note: "AJet yeni kurumsal boyamasıyla iç ve dış hatlarda uçan A321neo." },
 "TC-LAK": { reg: "TC-LAK", aircraftId: "A321NEO", type: "Airbus A321-271NX (A321neo)", airline: "AJet", delivered: "2023", msn: "11312", engines: "2x PW1133G-JM", base: "SAW (Sabiha Gökçen)", note: "AJet filosunun yeni nesil dar gövde üyesi." },
 "TC-JRO": { reg: "TC-JRO", aircraftId: "A321", type: "Airbus A321-231", airline: "Türk Hava Yolları", delivered: "2011", msn: "4682", engines: "2x IAE V2533-A5", base: "IST (İstanbul Havalimanı)", note: "Star Alliance / THY iç ve orta menzil filosu." },

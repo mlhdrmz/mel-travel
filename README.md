@@ -11,7 +11,7 @@
 2. **Şehir Detay Paneli & Fotoğraf Galerisi:**
    - Herhangi bir şehre tıkladığınızda şehrin gezilecek yerleri, meşhur yemekleri, havalimanı bilgisi, o şehre yapılan uçuşlar ve kişisel fotoğraf/not galerisi açılır.
 3. **Dijital Biniş Kartları (Boarding Pass) & Seyahat Günlüğü:**
-   - **Pegasus (`PC2730`)** `SAW → ASR` (`Airbus A321`, Koltuk `20A`) ve **AJet (`VF3181`)** `ASR → SAW` (`Airbus A321neo`, Koltuk `20A`, Kapı `206`) başlangıç uçuşlarıyla hazır gelir.
+   - **Pegasus (`PC2730`)** `SAW → ASR` (`Airbus A321neo`, Koltuk `20A`) ve **AJet (`VF3181`)** `ASR → SAW` (`Airbus A321neo`, Koltuk `20A`, Kapı `206`) başlangıç uçuşlarıyla hazır gelir.
    - Orijinal bilet görseli önizleme ve yeni seyahat/uçuş (Uçak, Araba, Otobüs, Tren) ekleme.
 4. **Uçak Hangarım & İnteraktif Kabin Koltuk Haritası:**
    - Bindiğiniz uçakların fotoğraflı bilgi kartları, motor/menzil/seyir hızı verileri ve `20A` koltuğunu kanat hizasıyla gösteren interaktif kabin şeması.

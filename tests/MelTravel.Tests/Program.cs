@@ -56,9 +56,9 @@ Assert(outboundFlight is not null
     && outboundFlight.Date == "2026-11-08"
     && outboundFlight.DepartureTime == "05:30"
     && outboundFlight.ArrivalTime == "06:45"
-    && outboundFlight.AircraftId == "A321"
+    && outboundFlight.AircraftId == "A321NEO"
     && outboundFlight.Seat == "20A",
-    "Gidiş Uçuşu Doğrulaması (Pegasus PC2730 • SAW->ASR • 08.11.2026 • Airbus A321 • Koltuk 20A)");
+    "Gidiş Uçuşu Doğrulaması (Pegasus PC2730 • SAW->ASR • 08.11.2026 • Airbus A321neo • Koltuk 20A)");
 
 var returnFlight = profile.Flights.FirstOrDefault(f => f.FlightNumber == "VF3181");
 Assert(returnFlight is not null
